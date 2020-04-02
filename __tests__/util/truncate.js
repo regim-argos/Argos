@@ -3,7 +3,7 @@ import database from '../../src/database';
 
 export default function truncate(confirmEmail = true) {
   return Promise.all([
-    ...Object.keys(database.connection.models).map(key => {
+    ...Object.keys(database.connection.models).map((key) => {
       return database.connection.models[key].destroy({
         truncate: { cascade: true },
         force: true,

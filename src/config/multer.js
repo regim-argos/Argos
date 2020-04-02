@@ -40,7 +40,7 @@ export default {
   storage,
   fileFilter: (req, file, cb) => {
     const isAccepted = ['image/png', 'image/jpg', 'image/jpeg'].find(
-      format => format === file.mimetype
+      (format) => format === file.mimetype
     );
     if (!isAccepted) cb(new BadRequestError('Format invalid'));
 

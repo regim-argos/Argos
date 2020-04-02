@@ -25,9 +25,7 @@ describe('User Create', () => {
     const user = await factory.attrs('User');
     Queue.add.mockResolvedValue();
 
-    const response = await request(app.server)
-      .post('/v1/pub/users')
-      .send(user);
+    const response = await request(app.server).post('/v1/pub/users').send(user);
 
     expect(response.status).toBe(201);
     expect(response.body).toHaveProperty('id');

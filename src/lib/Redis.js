@@ -59,7 +59,7 @@ class Cache {
     }
     const keys = await this.redis.keys(`cache:${prefix}:*`);
 
-    const keysWithoutPrefix = keys.map(key => key.replace('cache:', ''));
+    const keysWithoutPrefix = keys.map((key) => key.replace('cache:', ''));
 
     if (keysWithoutPrefix.length === 0) return [];
     return this.redis.del(keysWithoutPrefix);

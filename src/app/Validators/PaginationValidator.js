@@ -5,9 +5,7 @@ class PaginationValidator extends Validator {
   constructor() {
     super();
     this.paginationSchema = object().shape({
-      page: number()
-        .min(1)
-        .default(1),
+      page: number().min(1).default(1),
     });
   }
 

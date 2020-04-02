@@ -31,7 +31,7 @@ class Queue {
         handle,
       };
     });
-    setQueues(Object.keys(this.queues).map(key => this.queues[key].bull));
+    setQueues(Object.keys(this.queues).map((key) => this.queues[key].bull));
   }
 
   add(queue, job) {
@@ -39,7 +39,7 @@ class Queue {
   }
 
   processQueue() {
-    jobs.forEach(job => {
+    jobs.forEach((job) => {
       const { bull, handle } = this.queues[job.key];
 
       bull

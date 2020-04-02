@@ -1,4 +1,4 @@
-import File from '../models/File';
+import File from './File';
 
 class FileQuery {
   async getFileById(id, userId) {

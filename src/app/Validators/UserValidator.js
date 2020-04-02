@@ -7,19 +7,13 @@ class UserValidator extends Validator {
 
     this.createSchema = Yup.object().shape({
       name: Yup.string().required(),
-      email: Yup.string()
-        .email()
-        .required(),
-      password: Yup.string()
-        .required()
-        .min(6),
+      email: Yup.string().email().required(),
+      password: Yup.string().required().min(6),
     });
 
     this.updateSchema = Yup.object().shape({
       name: Yup.string(),
-      imageId: Yup.number()
-        .integer()
-        .min(1),
+      imageId: Yup.number().integer().min(1),
       oldPassword: Yup.string()
         .min(6)
         .when('password', (password, field) =>
@@ -32,9 +26,7 @@ class UserValidator extends Validator {
     });
 
     this.updatePasswordSchema = Yup.object().shape({
-      password: Yup.string()
-        .min(6)
-        .required(),
+      password: Yup.string().min(6).required(),
       confirmPassword: Yup.string().when('password', (password, field) =>
         password ? field.required().oneOf([Yup.ref('password')]) : field
       ),
