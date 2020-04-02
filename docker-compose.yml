@@ -1,0 +1,19 @@
+version: '3.7'
+services:
+  backend:
+    image: diogo8machado/argos
+    ports:
+      - 3333:3333
+    environment:
+      APP_URL: http://172.17.0.1:3333
+      APP_SECRET: adwe@asd2234321@+
+      NODE_ENV: production
+      REDIS_HOST: 172.17.0.1
+      REDIS_PORT: 6379
+      DB_DIALECT: postgres
+      DB_HOST: 172.17.0.1
+      DB_USER: postgres
+      DB_PASS: docker
+      DB_NAME: argos
+volumes:
+  pg_data_argos:
