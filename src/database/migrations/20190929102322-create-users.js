@@ -18,11 +18,11 @@ module.exports = {
       },
       defaultDelay: {
         type: Sequelize.INTEGER,
-        default: 60,
+        defaultValue: 60,
       },
       watcherNumber: {
         type: Sequelize.INTEGER,
-        default: 5,
+        defaultValue: 5,
       },
       active: {
         type: Sequelize.BOOLEAN,
