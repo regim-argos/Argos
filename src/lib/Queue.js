@@ -3,8 +3,9 @@ import { setQueues } from 'bull-board';
 import ConfirmEmailJob from '../app/jobs/ConfirmEmail';
 import redisConfig from '../config/redis';
 import ForgetPassword from '../app/jobs/ForgetPassword';
+import Watcher from '../app/jobs/Watcher';
 
-const jobs = [ConfirmEmailJob, ForgetPassword];
+const jobs = [ConfirmEmailJob, ForgetPassword, Watcher];
 
 class Queue {
   constructor() {
@@ -19,7 +20,7 @@ class Queue {
         bull: new Bull(key, {
           limiter: {
             max: 12,
-            duration: 1000,
+            duration: 4000,
           },
           defaultJobOptions: {
             backoff: 5 * 60 * 1000,
@@ -34,8 +35,12 @@ class Queue {
     setQueues(Object.keys(this.queues).map((key) => this.queues[key].bull));
   }
 
-  add(queue, job) {
-    return this.queues[queue].bull.add(job);
+  add(queue, job, repeat) {
+    return this.queues[queue].bull.add(job, { repeat, jobId: job.id });
+  }
+
+  async remove(queue, time, jobId) {
+    await this.queues[queue].bull.removeRepeatable({ every: time, jobId });
   }
 
   processQueue() {
@@ -55,7 +60,7 @@ class Queue {
     console.log(`Queue ${job.queue.name}: FAILED`, err);
   }
 
-  handleSuccess(job, err) {
+  async handleSuccess(job, err) {
     // eslint-disable-next-line no-console
     console.log(`Queue ${job.queue.name}: SUCCESS`, err);
   }
