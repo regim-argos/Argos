@@ -33,14 +33,6 @@ class UserValidator extends Validator {
     });
   }
 
-  async createValidator(payload) {
-    return this.validate(this.createSchema, payload);
-  }
-
-  async updateValidator(payload) {
-    return this.validate(this.updateSchema, payload);
-  }
-
   async updatePassword(payload) {
     return this.validate(this.updatePasswordSchema, payload);
   }

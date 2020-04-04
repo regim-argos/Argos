@@ -20,14 +20,6 @@ class WatcherValidator extends Validator {
       active: Yup.boolean(),
     });
   }
-
-  async createValidator(payload) {
-    return this.validate(this.createSchema, payload);
-  }
-
-  async updateValidator(payload) {
-    return this.validate(this.updateSchema, payload);
-  }
 }
 
 export default new WatcherValidator();

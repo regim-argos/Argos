@@ -1,30 +1,16 @@
 import WatcherValidator from '../Validators/WatcherValidator';
-import NotFoundError from '../Error/NotFoundError';
 import Watcher from '../models/Watcher';
 import Queue from '../../lib/Queue';
+import Service from './Service';
 
-class WatcherServices {
+class WatcherServices extends Service {
   constructor() {
-    this.model = Watcher;
-  }
-
-  async getUserWatchers(userId, page, search) {
-    return this.model.getUserWatchers(userId, search);
-  }
-
-  async verifyAndGetWatcher(id, userId, role) {
-    const watcher = await this.model.getWatcherById(
-      id,
-      role === 'ADMIN' ? undefined : userId
-    );
-    if (!watcher) throw new NotFoundError('Watcher');
-    return watcher;
+    super('Watcher', Watcher, WatcherValidator);
   }
 
   async create(data, userId) {
-    const ValidatedWatcher = await WatcherValidator.createValidator(data);
+    const watcher = await super.create(data, userId);
 
-    const watcher = await this.model.createWatcher(ValidatedWatcher, userId);
     if (watcher.active)
       await Queue.addRepeatJob('Watcher', watcher, {
         every: watcher.delay * 1000,
@@ -34,31 +20,27 @@ class WatcherServices {
   }
 
   async update(data, id, userId) {
-    const ValidatedWatcher = await WatcherValidator.updateValidator(data);
+    const { old, newValue } = await super.update(data, id, userId);
 
-    const dbWatcher = await this.verifyAndGetWatcher(id, userId);
-    const updatedWatcher = await this.model.updateWatcherById(
-      ValidatedWatcher,
-      id,
-      userId
-    );
-    await Queue.remove('Watcher', dbWatcher.delay * 1000, dbWatcher.id);
-    if (updatedWatcher.active)
-      await Queue.addRepeatJob('Watcher', updatedWatcher, {
-        every: updatedWatcher.delay * 1000,
+    await Queue.remove('Watcher', old.delay * 1000, old.id);
+    if (newValue.active)
+      await Queue.addRepeatJob('Watcher', newValue, {
+        every: newValue.delay * 1000,
       });
-    return updatedWatcher;
+
+    return newValue;
   }
 
   async delete(id, userId) {
-    const watcher = await this.verifyAndGetWatcher(id, userId);
-    await this.model.deleteWatcherById(id, userId);
+    const watcher = await super.delete(id, userId);
+
     await Queue.remove('Watcher', watcher.delay * 1000, watcher.id);
+
     return watcher;
   }
 
   async changeStatus(status, id, userId) {
-    await this.verifyAndGetWatcher(id, userId, 'ADMIN');
+    await this.verifyAndGet(id, userId, 'ADMIN');
 
     await this.model.ChangeWatcherStatusById({ status }, id);
   }
