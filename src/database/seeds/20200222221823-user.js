@@ -8,10 +8,11 @@ module.exports = {
         {
           name: 'Argos Admin',
           email: 'admin@argos.com',
-          password_hash: bcrypt.hashSync('123456', 8),
+          password_hash: bcrypt.hashSync(process.env.ADMIN_PASS || '123456', 8),
           active: true,
           created_at: new Date(),
           updated_at: new Date(),
+          role: 'ADMIN',
         },
       ],
       {}

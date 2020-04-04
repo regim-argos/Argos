@@ -35,7 +35,11 @@ class Queue {
     setQueues(Object.keys(this.queues).map((key) => this.queues[key].bull));
   }
 
-  add(queue, job, repeat) {
+  add(queue, job) {
+    return this.queues[queue].bull.add(job);
+  }
+
+  addRepeatJob(queue, job, repeat) {
     return this.queues[queue].bull.add(job, { repeat, jobId: job.id });
   }
 

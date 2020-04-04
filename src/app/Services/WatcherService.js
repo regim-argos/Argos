@@ -12,8 +12,11 @@ class WatcherServices {
     return this.model.getUserWatchers(userId, search);
   }
 
-  async verifyAndGetWatcher(id, userId) {
-    const watcher = await this.model.getWatcherById(id, userId);
+  async verifyAndGetWatcher(id, userId, role) {
+    const watcher = await this.model.getWatcherById(
+      id,
+      role === 'ADMIN' ? undefined : userId
+    );
     if (!watcher) throw new NotFoundError('Watcher');
     return watcher;
   }
@@ -22,7 +25,11 @@ class WatcherServices {
     const ValidatedWatcher = await WatcherValidator.createValidator(data);
 
     const watcher = await this.model.createWatcher(ValidatedWatcher, userId);
-    await Queue.add('Watcher', watcher, { every: 10000 });
+    if (watcher.active)
+      await Queue.addRepeatJob('Watcher', watcher, {
+        every: watcher.delay * 1000,
+      });
+
     return watcher;
   }
 
@@ -35,20 +42,25 @@ class WatcherServices {
       id,
       userId
     );
-    if (ValidatedWatcher.active !== dbWatcher.active) {
-      if (ValidatedWatcher.active === true) {
-        await Queue.add('Watcher', updatedWatcher, { every: 10000 });
-      } else {
-        await Queue.remove('Watcher', 10000, updatedWatcher.id);
-      }
-    }
+    await Queue.remove('Watcher', dbWatcher.delay * 1000, dbWatcher.id);
+    if (updatedWatcher.active)
+      await Queue.addRepeatJob('Watcher', updatedWatcher, {
+        every: updatedWatcher.delay * 1000,
+      });
     return updatedWatcher;
   }
 
   async delete(id, userId) {
-    const watcher = await this.verifyAndGetWatcher(id);
+    const watcher = await this.verifyAndGetWatcher(id, userId);
     await this.model.deleteWatcherById(id, userId);
+    await Queue.remove('Watcher', watcher.delay * 1000, watcher.id);
     return watcher;
+  }
+
+  async changeStatus(status, id, userId) {
+    await this.verifyAndGetWatcher(id, userId, 'ADMIN');
+
+    await this.model.ChangeWatcherStatusById({ status }, id);
   }
 }
 

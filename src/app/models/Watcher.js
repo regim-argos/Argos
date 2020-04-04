@@ -32,8 +32,8 @@ class Watcher extends Model {
   }
 
   static async getWatcherById(id, user_id) {
-    const DocWatcher = await this.findByPk(id, {
-      where: { user_id },
+    const DocWatcher = await this.findOne({
+      where: user_id ? { user_id, id } : { id },
     });
 
     return DocWatcher && DocWatcher.get();
@@ -51,6 +51,15 @@ class Watcher extends Model {
   static async updateWatcherById(data, id, user_id) {
     const [, [DocWatcher]] = await this.update(data, {
       where: { user_id, id },
+      returning: true,
+    });
+
+    return DocWatcher && DocWatcher.get();
+  }
+
+  static async ChangeWatcherStatusById(data, id) {
+    const [, [DocWatcher]] = await this.update(data, {
+      where: { id },
       returning: true,
     });
 

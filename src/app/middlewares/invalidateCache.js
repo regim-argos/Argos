@@ -8,7 +8,7 @@ export default async (req, _res, next) => {
       req.method,
       req.userId,
       req.redisKey,
-      req.public
+      req.adminRedisKey
     );
     if (keys) {
       keys.map(async ({ key, type }) => {

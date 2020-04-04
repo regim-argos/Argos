@@ -1,4 +1,13 @@
+/* eslint-disable no-console */
 import axios from 'axios';
+import Cache from '../../lib/Redis';
+
+const ArgosApi = axios.create({
+  baseURL: `http://localhost:3333/v1/pvt/`,
+  headers: {
+    Authorization: `Bearer ${process.env.ADMIN_TOKEN}`,
+  },
+});
 
 class Watcher {
   get key() {
@@ -6,12 +15,20 @@ class Watcher {
   }
 
   async handle({ data }) {
-    const { name, url, id } = data;
+    const { id } = data;
+    let watcher;
+    watcher = await Cache.get(`admin:watchers:${id}`);
+    if (!watcher) {
+      const response = await ArgosApi.get(`watchers/${id}`);
+      watcher = response.data;
+    }
     try {
-      await axios.get(url);
-      console.log(name, id, 'UP');
+      await axios.get(watcher.url);
+      if (!watcher.status)
+        await ArgosApi.put(`change_status/${id}`, { status: true });
     } catch (error) {
-      console.log(name, id, 'DOWN');
+      if (watcher.status)
+        await ArgosApi.put(`change_status/${id}`, { status: false });
     }
   }
 }

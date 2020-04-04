@@ -15,10 +15,15 @@ class WatcherController {
   async show(req, res, next) {
     const {
       userId,
+      userRole,
       params: { id },
     } = req;
 
-    const watcher = await WatcherService.verifyAndGetWatcher(id, userId);
+    const watcher = await WatcherService.verifyAndGetWatcher(
+      id,
+      userId,
+      userRole
+    );
 
     req.response = watcher;
     res.status(200).json(watcher);

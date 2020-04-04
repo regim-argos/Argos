@@ -5,8 +5,10 @@ import getEntity from '../utils/getEntity';
 export default async (req, res, next) => {
   const { entity, paths } = getEntity(req);
   const redisKey = getRedisKey(req, entity, paths);
+  const adminRedisKey = getRedisKey(req, entity, paths, 'ADMIN');
   req.entity = entity;
   req.redisKey = redisKey;
+  req.adminRedisKey = adminRedisKey;
   if (req.method === 'GET') {
     if (redisKey) {
       const cached = await Cache.get(redisKey);
