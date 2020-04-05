@@ -22,6 +22,7 @@ export default class Service {
 
   async create(data, userId) {
     const validated = await this.validator.createValidator(data);
+    await this.dbValidatorCreate(validated, userId);
 
     const item = await this.model.create(validated, userId);
 
@@ -30,12 +31,13 @@ export default class Service {
 
   async update(data, id, userId, returnOld) {
     const validated = await this.validator.updateValidator(data);
+    const oldValue = await this.verifyAndGet(id, userId);
 
-    const dbItem = await this.verifyAndGet(id, userId);
+    await this.dbValidatorUpdate(validated, userId, id, oldValue);
     const updated = await this.model.updateById(validated, id, userId);
 
     if (!returnOld) return updated;
-    return { old: dbItem, newValue: updated };
+    return { old: oldValue, newValue: updated };
   }
 
   async delete(id, userId) {
@@ -43,4 +45,10 @@ export default class Service {
     await this.model.deleteById(id, userId);
     return item;
   }
+
+  // eslint-disable-next-line no-empty-function
+  async dbValidatorCreate() {}
+
+  // eslint-disable-next-line no-empty-function
+  async dbValidatorUpdate() {}
 }

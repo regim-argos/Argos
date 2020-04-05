@@ -48,7 +48,8 @@ class Notification extends Model {
   static async getById(id, user_id) {
     const notification = await super.getById(id, user_id);
 
-    notification.platformData = JSON.parse(notification.platformData);
+    if (notification)
+      notification.platformData = JSON.parse(notification.platformData);
 
     return notification;
   }
