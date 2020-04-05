@@ -4,8 +4,9 @@ import ConfirmEmailJob from '../app/jobs/ConfirmEmail';
 import redisConfig from '../config/redis';
 import ForgetPassword from '../app/jobs/ForgetPassword';
 import Watcher from '../app/jobs/Watcher';
+import DiscordNotification from '../app/jobs/DiscordNotification';
 
-const jobs = [ConfirmEmailJob, ForgetPassword, Watcher];
+const jobs = [ConfirmEmailJob, ForgetPassword, Watcher, DiscordNotification];
 
 class Queue {
   constructor() {

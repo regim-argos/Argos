@@ -1,4 +1,4 @@
-import { Model as SequelizeModel, Op } from 'sequelize';
+import { Model as SequelizeModel } from 'sequelize';
 
 class Model extends SequelizeModel {
   static init(dataTypes, sequelize) {
@@ -7,9 +7,9 @@ class Model extends SequelizeModel {
     return this;
   }
 
-  static async getAllByUserId(user_id, search = '') {
+  static async getAllByUserId(user_id) {
     const Doc = await this.findAndCountAll({
-      where: { user_id, name: { [Op.iLike]: `%${search}%` } },
+      where: { user_id },
       order: [['createdAt', 'DESC']],
     });
 

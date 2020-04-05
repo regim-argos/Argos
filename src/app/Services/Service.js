@@ -28,12 +28,13 @@ export default class Service {
     return item;
   }
 
-  async update(data, id, userId) {
+  async update(data, id, userId, returnOld) {
     const validated = await this.validator.updateValidator(data);
 
     const dbItem = await this.verifyAndGet(id, userId);
     const updated = await this.model.updateById(validated, id, userId);
 
+    if (!returnOld) return updated;
     return { old: dbItem, newValue: updated };
   }
 

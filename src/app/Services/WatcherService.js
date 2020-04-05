@@ -2,6 +2,7 @@ import WatcherValidator from '../Validators/WatcherValidator';
 import Watcher from '../models/Watcher';
 import Queue from '../../lib/Queue';
 import Service from './Service';
+import NotificationService from './NotificationService';
 
 class WatcherServices extends Service {
   constructor() {
@@ -20,7 +21,7 @@ class WatcherServices extends Service {
   }
 
   async update(data, id, userId) {
-    const { old, newValue } = await super.update(data, id, userId);
+    const { old, newValue } = await super.update(data, id, userId, true);
 
     await Queue.remove('Watcher', old.delay * 1000, old.id);
     if (newValue.active)
@@ -42,7 +43,18 @@ class WatcherServices extends Service {
   async changeStatus(status, id, userId) {
     await this.verifyAndGet(id, userId, 'ADMIN');
 
-    await this.model.ChangeWatcherStatusById({ status }, id);
+    const watcher = await this.model.ChangeWatcherStatusById({ status }, id);
+
+    const notifications = await NotificationService.getAllByWatcherId(id);
+
+    Promise.all(
+      notifications.map(async (notification) => {
+        await Queue.add(`${notification.platform}_NOTIFICATION`, {
+          watcher,
+          notification,
+        });
+      })
+    );
   }
 }
 
