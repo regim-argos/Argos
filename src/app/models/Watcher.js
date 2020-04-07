@@ -10,6 +10,7 @@ class Watcher extends Model {
         status: Sequelize.BOOLEAN,
         delay: Sequelize.INTEGER,
         active: Sequelize.BOOLEAN,
+        lastChange: Sequelize.DATE,
       },
       {
         sequelize,

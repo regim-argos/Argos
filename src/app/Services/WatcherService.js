@@ -43,9 +43,12 @@ class WatcherServices extends Service {
   }
 
   async changeStatus(status, id, userId) {
-    await this.verifyAndGet(id, userId, 'ADMIN');
+    const oldWatcher = await this.verifyAndGet(id, userId, 'ADMIN');
 
-    const watcher = await this.model.ChangeWatcherStatusById({ status }, id);
+    const watcher = await this.model.ChangeWatcherStatusById(
+      { status, lastChange: new Date() },
+      id
+    );
 
     const notifications = await NotificationService.getAllByWatcherId(id);
 
@@ -53,6 +56,7 @@ class WatcherServices extends Service {
       notifications.map(async (notification) => {
         await Queue.add(`${notification.platform}_NOTIFICATION`, {
           watcher,
+          oldWatcher,
           notification,
         });
       })
