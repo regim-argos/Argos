@@ -1,8 +1,10 @@
+/* eslint-disable import/no-cycle */
 import WatcherValidator from '../Validators/WatcherValidator';
 import Watcher from '../models/Watcher';
 import Queue from '../../lib/Queue';
 import Service from './Service';
 import NotificationService from './NotificationService';
+import app from '../../app';
 
 class WatcherServices extends Service {
   constructor() {
@@ -54,6 +56,11 @@ class WatcherServices extends Service {
           notification,
         });
       })
+    );
+    await app.socketIo.sendNotification(
+      watcher.user_id,
+      'ChangeStatus',
+      watcher
     );
   }
 }
