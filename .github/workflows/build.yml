@@ -16,4 +16,4 @@ jobs:
           name: diogo8machado/argos
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-          workdir: ./
+          workdir: src
