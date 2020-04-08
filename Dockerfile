@@ -9,4 +9,6 @@ WORKDIR /argos
 
 RUN yarn install --production --silent
 
+RUN yarn build
+
 CMD yarn migrations && yarn start
