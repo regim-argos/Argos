@@ -5,8 +5,15 @@ import redisConfig from '../config/redis';
 import ForgetPassword from '../app/jobs/ForgetPassword';
 import Watcher from '../app/jobs/Watcher';
 import DiscordNotification from '../app/jobs/DiscordNotification';
+import SlackNotification from '../app/jobs/SlackNotification';
 
-const jobs = [ConfirmEmailJob, ForgetPassword, Watcher, DiscordNotification];
+const jobs = [
+  ConfirmEmailJob,
+  ForgetPassword,
+  Watcher,
+  DiscordNotification,
+  SlackNotification,
+];
 
 class Queue {
   constructor() {
@@ -24,8 +31,8 @@ class Queue {
             duration: 4000,
           },
           defaultJobOptions: {
-            backoff: 5 * 60 * 1000,
-            attempts: 150,
+            backoff: 1 * 60 * 1000,
+            attempts: 30,
             removeOnComplete: true,
           },
           redis: redisConfig,

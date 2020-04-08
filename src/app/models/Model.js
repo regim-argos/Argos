@@ -8,7 +8,7 @@ class Model extends SequelizeModel {
   }
 
   static async getAllByUserId(user_id) {
-    const Doc = await this.findAndCountAll({
+    const Doc = await this.findAll({
       where: { user_id },
       order: [['createdAt', 'DESC']],
     });

@@ -28,7 +28,7 @@ class Notification extends Model {
     const notifications = await super.getAllByUserId(user_id);
 
     return notifications.map((notification) => ({
-      ...notification,
+      ...notification.get(),
       platformData: JSON.parse(notification.platformData),
     }));
   }
