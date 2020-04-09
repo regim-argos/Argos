@@ -8,7 +8,7 @@ class WatcherValidator extends Validator {
       name: Yup.string().required().trim(),
       url: Yup.string().required().trim(),
       status: Yup.boolean(),
-      delay: Yup.number().integer().min(5),
+      delay: Yup.number().integer().min(10),
       active: Yup.boolean(),
     });
 
@@ -16,7 +16,7 @@ class WatcherValidator extends Validator {
       name: Yup.string().trim(),
       url: Yup.string().trim(),
       status: Yup.boolean(),
-      delay: Yup.number().integer().min(5),
+      delay: Yup.number().integer().min(10),
       active: Yup.boolean(),
     });
   }
