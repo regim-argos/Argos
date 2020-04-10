@@ -18,56 +18,13 @@ class Notification extends Model {
 
   static associate(models) {
     this.belongsTo(models.User, { foreignKey: 'user_id', as: 'user' });
-    this.belongsTo(models.Watcher, {
-      foreignKey: { field: 'watcher_id', name: 'watcherId' },
-      as: 'watcher',
-    });
   }
 
-  static async getAllByUserId(user_id) {
-    const notifications = await super.getAllByUserId(user_id);
-
-    return notifications.map((notification) => ({
-      ...notification.get(),
-      platformData: JSON.parse(notification.platformData),
-    }));
-  }
-
-  static async getAllByWatcherId(watcherId) {
-    const notifications = await this.findAll({
-      where: { watcherId },
+  static async getAllByIds(ids) {
+    return this.findAll({
+      where: { id: ids },
       order: [['createdAt', 'DESC']],
     });
-
-    return notifications.map((notification) => ({
-      ...notification.get(),
-      platformData: JSON.parse(notification.platformData),
-    }));
-  }
-
-  static async getById(id, user_id) {
-    const notification = await super.getById(id, user_id);
-
-    if (notification)
-      notification.platformData = JSON.parse(notification.platformData);
-
-    return notification;
-  }
-
-  static async create(data, user_id) {
-    const notification = await super.create(data, user_id);
-
-    notification.platformData = JSON.parse(notification.platformData);
-
-    return notification;
-  }
-
-  static async updateById(data, id, user_id) {
-    const notification = await super.updateById(data, id, user_id);
-
-    notification.platformData = JSON.parse(notification.platformData);
-
-    return notification;
   }
 }
 

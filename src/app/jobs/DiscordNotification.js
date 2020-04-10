@@ -11,7 +11,7 @@ class DiscordNotification {
     const { watcher, oldWatcher, notification } = data;
     const status = watcher.status ? 'UP' : 'DOWN';
     const circle = watcher.status ? ':green_circle:' : ':red_circle:';
-
+    console.log(watcher.lastChange, oldWatcher.lastChange);
     await axios.post(notification.platformData.webhook, {
       username: 'Argos',
       content: `${circle} ${getDataFormat(

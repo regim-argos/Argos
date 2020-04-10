@@ -10,6 +10,7 @@ class WatcherValidator extends Validator {
       status: Yup.boolean(),
       delay: Yup.number().integer().min(10),
       active: Yup.boolean(),
+      notifications: Yup.array().default([]),
     });
 
     this.updateSchema = Yup.object().shape({
@@ -18,6 +19,7 @@ class WatcherValidator extends Validator {
       status: Yup.boolean(),
       delay: Yup.number().integer().min(10),
       active: Yup.boolean(),
+      notifications: Yup.array().default([]),
     });
   }
 }

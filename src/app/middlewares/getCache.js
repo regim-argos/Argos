@@ -9,7 +9,7 @@ export default async (req, res, next) => {
   req.entity = entity;
   req.redisKey = redisKey;
   req.adminRedisKey = adminRedisKey;
-  if (req.method === 'GET') {
+  if (req.method === 'GET' && req.query.cache !== 'false') {
     if (redisKey) {
       const cached = await Cache.get(redisKey);
 
