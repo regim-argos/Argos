@@ -5,7 +5,6 @@ import Queue from '../../lib/Queue';
 import Service from './Service';
 import NotificationService from './NotificationService';
 import app from '../../app';
-import User from '../models/User';
 import UserServices from './UserServices';
 import BadRequestError from '../Error/BadRequestError';
 
@@ -25,16 +24,25 @@ class WatcherServices extends Service {
     return watcher;
   }
 
-  async dbValidatorCreate(validated, userId){
+  async dbValidatorCreate(validated, userId) {
     const user = await UserServices.verifyAndGetUserById(userId);
-    if(validated.delay < user.defaultDelay) throw new BadRequestError(`Watcher time can't be less than ${user.defaultDelay} seconds`);
-    const watchers = await this.getAllByUserId(userId)
-    if(user.watcherNumber < watchers.length) throw new BadRequestError(`Can't add another watcher, max number is ${user.watcherNumber}. Want more? upgrade your plan`);
+    if (validated.delay < user.defaultDelay)
+      throw new BadRequestError(
+        `Watcher time can't be less than ${user.defaultDelay} seconds`
+      );
+    const watchers = await this.getAllByUserId(userId);
+    if (user.watcherNumber < watchers.length)
+      throw new BadRequestError(
+        `Can't add another watcher, max number is ${user.watcherNumber}. Want more? upgrade your plan`
+      );
   }
 
-  async dbValidatorUpdate(validated, userId){
+  async dbValidatorUpdate(validated, userId) {
     const user = await UserServices.verifyAndGetUserById(userId);
-    if(validated.delay < user.defaultDelay) throw new BadRequestError(`Watcher time can't be less than ${user.defaultDelay} seconds`);
+    if (validated.delay < user.defaultDelay)
+      throw new BadRequestError(
+        `Watcher time can't be less than ${user.defaultDelay} seconds`
+      );
   }
 
   async update(data, id, userId) {
