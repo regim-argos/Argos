@@ -75,7 +75,7 @@ class WatcherServices extends Service {
 
     const notifications = await NotificationService.getAllByWatcherId(id);
 
-    Promise.all(
+    await Promise.all(
       notifications.map(async (notification) => {
         await Queue.add(`${notification.platform}_NOTIFICATION`, {
           watcher,
