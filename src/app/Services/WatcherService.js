@@ -3,7 +3,6 @@ import WatcherValidator from '../Validators/WatcherValidator';
 import Watcher from '../models/Watcher';
 import Queue from '../../lib/Queue';
 import Service from './Service';
-import NotificationService from './NotificationService';
 import app from '../../app';
 import UserServices from './UserServices';
 import BadRequestError from '../Error/BadRequestError';
@@ -73,10 +72,8 @@ class WatcherServices extends Service {
       id
     );
 
-    const notifications = await NotificationService.getAllByWatcherId(id);
-
     await Promise.all(
-      notifications.map(async (notification) => {
+      oldWatcher.notifications.map(async (notification) => {
         await Queue.add(`${notification.platform}_NOTIFICATION`, {
           watcher,
           oldWatcher,
