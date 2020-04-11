@@ -1,29 +1,22 @@
 import Redis from 'ioredis';
 
+const config = {
+  host: process.env.REDIS_HOST,
+  password: process.env.REDIS_PASS,
+  keyPrefix: 'cache:',
+  retryStrategy(times) {
+    const delay = Math.min(times * 5000, 200000);
+    return delay;
+  },
+  reconnectOnError: () => false,
+};
+
 class Cache {
   constructor() {
     if (process.env.REDIS_CLUSTER) {
-      this.redis = new Redis.Cluster({
-        host: process.env.REDIS_HOST,
-        password: process.env.REDIS_PASS,
-        keyPrefix: 'cache:',
-        retryStrategy(times) {
-          const delay = Math.min(times * 5000, 200000);
-          return delay;
-        },
-        reconnectOnError: () => false,
-      });
+      this.redis = new Redis.Cluster(config);
     } else {
-      this.redis = new Redis({
-        host: process.env.REDIS_HOST,
-        password: process.env.REDIS_PASS,
-        keyPrefix: 'cache:',
-        retryStrategy(times) {
-          const delay = Math.min(times * 5000, 200000);
-          return delay;
-        },
-        reconnectOnError: () => false,
-      });
+      this.redis = new Redis(config);
     }
   }
 
