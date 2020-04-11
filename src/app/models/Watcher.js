@@ -52,7 +52,7 @@ class Watcher extends Model {
     );
     if (watcher)
       watcher.notifications =
-        watcher?.notifications[0]?.id === null ? [] : watcher.notifications;
+        watcher.notifications[0]?.id === null ? [] : watcher.notifications;
     return watcher;
   }
 
