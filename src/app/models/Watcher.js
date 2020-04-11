@@ -50,8 +50,9 @@ class Watcher extends Model {
         type: QueryTypes.SELECT,
       }
     );
-    watcher.notifications =
-      watcher.notifications[0].id === null ? [] : watcher.notifications;
+    if (watcher)
+      watcher.notifications =
+        watcher?.notifications[0]?.id === null ? [] : watcher.notifications;
     return watcher;
   }
 
