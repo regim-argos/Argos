@@ -16,9 +16,9 @@ const configRedis = process.env.URL_REDIS || config;
 class Cache {
   constructor() {
     if (process.env.REDIS_CLUSTER) {
-      this.redis = new Redis.Cluster(configRedis);
+      this.redis = new Redis.Cluster(configRedis, { keyPrefix: 'cache:' });
     } else {
-      this.redis = new Redis(configRedis);
+      this.redis = new Redis(configRedis, { keyPrefix: 'cache:' });
     }
   }
 
