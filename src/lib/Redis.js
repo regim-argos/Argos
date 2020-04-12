@@ -11,12 +11,14 @@ const config = {
   reconnectOnError: () => false,
 };
 
+const configRedis = process.env.URL_REDIS || config;
+
 class Cache {
   constructor() {
     if (process.env.REDIS_CLUSTER) {
-      this.redis = new Redis.Cluster(config);
+      this.redis = new Redis.Cluster(configRedis);
     } else {
-      this.redis = new Redis(config);
+      this.redis = new Redis(configRedis);
     }
   }
 

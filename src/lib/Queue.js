@@ -35,7 +35,7 @@ class Queue {
             attempts: 30,
             removeOnComplete: true,
           },
-          redis: redisConfig,
+          redis: process.env.URL_REDIS || redisConfig,
         }),
         handle,
       };
