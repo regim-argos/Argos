@@ -6,12 +6,16 @@ class WatcherValidator extends Validator {
     super();
     this.createSchema = Yup.object().shape({
       platform: Yup.string().required().trim(),
-      platformData: Yup.mixed().required(),
+      platformData: Yup.object().required().shape({
+        webhook: Yup.string().url().required(),
+      }),
     });
 
     this.updateSchema = Yup.object().shape({
       platform: Yup.string().trim(),
-      platformData: Yup.mixed(),
+      platformData: Yup.object().default(undefined).shape({
+        webhook: Yup.string().url().required(),
+      }),
     });
   }
 }
