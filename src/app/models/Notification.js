@@ -20,9 +20,9 @@ class Notification extends Model {
     this.belongsTo(models.User, { foreignKey: 'user_id', as: 'user' });
   }
 
-  static async getAllByIds(ids) {
+  static async getAllByIds(ids, user_id) {
     return this.findAll({
-      where: { id: ids },
+      where: { id: ids, user_id },
       order: [['createdAt', 'DESC']],
     });
   }

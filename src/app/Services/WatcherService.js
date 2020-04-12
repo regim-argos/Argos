@@ -7,6 +7,7 @@ import app from '../../app';
 import UserServices from './UserServices';
 import BadRequestError from '../Error/BadRequestError';
 import Redis from '../../lib/Redis';
+import NotificationService from './NotificationService';
 
 class WatcherServices extends Service {
   constructor() {
@@ -25,6 +26,11 @@ class WatcherServices extends Service {
   }
 
   async dbValidatorCreate(validated, userId) {
+    if (validated.notifications?.length)
+      await NotificationService.getAllByIds(
+        validated.notifications.map((item) => item.id),
+        userId
+      );
     const user = await UserServices.verifyAndGetUserById(userId);
     if (validated.delay < user.defaultDelay)
       throw new BadRequestError(
@@ -38,6 +44,11 @@ class WatcherServices extends Service {
   }
 
   async dbValidatorUpdate(validated, userId) {
+    if (validated.notifications?.length)
+      await NotificationService.getAllByIds(
+        validated.notifications.map((item) => item.id),
+        userId
+      );
     const user = await UserServices.verifyAndGetUserById(userId);
     if (validated.delay < user.defaultDelay)
       throw new BadRequestError(
