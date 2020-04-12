@@ -3,7 +3,7 @@ import axios from 'axios';
 import Cache from '../../lib/Redis';
 
 const ArgosApi = axios.create({
-  baseURL: `http://localhost:3333/v1/pvt/`,
+  baseURL: `${process.env.API_URL}/v1/pvt/`,
   headers: {
     Authorization: `Bearer ${process.env.ADMIN_TOKEN}`,
   },
