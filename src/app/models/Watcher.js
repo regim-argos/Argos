@@ -34,7 +34,7 @@ class Watcher extends Model {
       watcher.status,
       watcher.delay,
       watcher.active,
-      watcher.user_id AS userId,
+      watcher.user_id,
       watcher.last_change AS "lastChange",
           JSONB_AGG(
               JSONB_BUILD_OBJECT('id', u.id, 'platform', u.platform, 'platformData', u.platform_data)

@@ -6,6 +6,7 @@ import Service from './Service';
 import app from '../../app';
 import UserServices from './UserServices';
 import BadRequestError from '../Error/BadRequestError';
+import Redis from '../../lib/Redis';
 
 class WatcherServices extends Service {
   constructor() {
@@ -86,6 +87,8 @@ class WatcherServices extends Service {
       'ChangeStatus',
       watcher
     );
+    await Redis.invalidate(`${watcher.user_id}:watchers:all`);
+    await Redis.invalidate(`${watcher.user_id}:watchers:${watcher.id}`);
   }
 }
 
