@@ -6,6 +6,7 @@ import ForgetPassword from '../app/jobs/ForgetPassword';
 import Watcher from '../app/jobs/Watcher';
 import DiscordNotification from '../app/jobs/DiscordNotification';
 import SlackNotification from '../app/jobs/SlackNotification';
+import Logger from './Logger';
 
 const jobs = [
   ConfirmEmailJob,
@@ -48,7 +49,12 @@ class Queue {
   }
 
   addRepeatJob(queue, job, repeat) {
-    return this.queues[queue].bull.add(job, { repeat, jobId: job.id });
+    return this.queues[queue].bull.add(job, {
+      repeat,
+      jobId: job.id,
+      attempts: 0,
+      removeOnFail: true,
+    });
   }
 
   async remove(queue, time, jobId) {
@@ -69,12 +75,11 @@ class Queue {
 
   handleFailure(job, err) {
     // eslint-disable-next-line no-console
-    console.log(`Queue ${job.queue.name}: FAILED`, err);
+    Logger.error('WatcherError', err);
   }
 
-  async handleSuccess(job, err) {
+  async handleSuccess() {
     // eslint-disable-next-line no-console
-    console.log(`Queue ${job.queue.name}: SUCCESS`, err);
   }
 }
 
