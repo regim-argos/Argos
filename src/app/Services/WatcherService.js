@@ -1,6 +1,5 @@
 /* eslint-disable import/no-cycle */
 import WatcherValidator from '../Validators/WatcherValidator';
-import Watcher from '../models/Watcher';
 import Queue from '../../lib/Queue';
 import Service from './Service';
 import app from '../../app';
@@ -8,10 +7,11 @@ import UserServices from './UserServices';
 import BadRequestError from '../Error/BadRequestError';
 import Redis from '../../lib/Redis';
 import NotificationService from './NotificationService';
+import WatcherData from '../data/WatcherData';
 
 class WatcherServices extends Service {
   constructor() {
-    super('Watcher', Watcher, WatcherValidator);
+    super('Watcher', WatcherData, WatcherValidator);
   }
 
   async create(data, userId) {

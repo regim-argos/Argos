@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import BadRequestError from '../Error/BadRequestError';
-import Hash from '../models/Hash';
+import Hash from '../data/models/Hash';
 // import HashValidator from '../Validators/MealValidator';
 // import { notFound } from '../Error/TypeErrors';
 // import ProductService from './ProductService';

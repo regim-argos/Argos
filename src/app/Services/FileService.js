@@ -1,5 +1,5 @@
 import BadRequestError from '../Error/BadRequestError';
-import File from '../models/File';
+import File from '../data/models/File';
 // import FileValidator from '../Validators/MealValidator';
 // import { notFound } from '../Error/TypeErrors';
 // import ProductService from './ProductService';

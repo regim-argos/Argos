@@ -5,8 +5,8 @@ import app from '../../src/app';
 
 import truncate from '../util/truncate';
 import Queue from '../../src/lib/Queue';
-import Hash from '../../src/app/models/Hash';
-import User from '../../src/app/models/User';
+import Hash from '../../src/app/data/models/Hash';
+import User from '../../src/app/data/models/User';
 
 jest.mock('../../src/lib/Queue', () => ({
   add: jest.fn(),

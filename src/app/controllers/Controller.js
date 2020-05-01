@@ -8,9 +8,7 @@ export default class Controller {
     const { search } = req.query;
 
     const items = await this.service.getAllByUserId(userId, search);
-    req.response = items;
-    res.status(200).json(items);
-    return next();
+    return res.status(200).json(items);
   }
 
   async show(req, res, next) {
@@ -22,9 +20,7 @@ export default class Controller {
 
     const item = await this.service.verifyAndGet(id, userId, userRole);
 
-    req.response = item;
-    res.status(200).json(item);
-    return next();
+    return res.status(200).json(item);
   }
 
   async store(req, res, next) {
@@ -32,8 +28,7 @@ export default class Controller {
 
     const item = await this.service.create(req.body, userId);
 
-    res.status(201).json(item);
-    return next();
+    return res.status(201).json(item);
   }
 
   async update(req, res, next) {
@@ -44,8 +39,7 @@ export default class Controller {
 
     const item = await this.service.update(req.body, id, user_id);
 
-    res.status(200).json(item);
-    return next();
+    return res.status(200).json(item);
   }
 
   async delete(req, res, next) {
@@ -56,7 +50,6 @@ export default class Controller {
 
     await this.service.delete(id, userId);
 
-    res.status(204).json();
-    return next();
+    return res.status(204).json();
   }
 }

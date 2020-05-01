@@ -1,16 +1,16 @@
 const dictionary = {
-  watchers: (params, { search }, userId, userRole) => {
-    const base = `${userRole === 'ADMIN' ? 'admin' : userId}:watchers`;
-    if (params[0]) return `${base}:${params[0]}`;
-    if (!search) return `${base}:all`;
-    return undefined;
-  },
-  change_status: (params, { search }, userId, userRole) => {
-    const base = `${userRole === 'ADMIN' ? 'admin' : userId}:watchers`;
-    if (params[0]) return `${base}:${params[0]}`;
-    if (!search) return `${base}:all`;
-    return undefined;
-  },
+  // watchers: (params, { search }, userId, userRole) => {
+  //   const base = `${userRole === 'ADMIN' ? 'admin' : userId}:watchers`;
+  //   if (params[0]) return `${base}:${params[0]}`;
+  //   if (!search) return `${base}:all`;
+  //   return undefined;
+  // },
+  // change_status: (params, { search }, userId, userRole) => {
+  //   const base = `${userRole === 'ADMIN' ? 'admin' : userId}:watchers`;
+  //   if (params[0]) return `${base}:${params[0]}`;
+  //   if (!search) return `${base}:all`;
+  //   return undefined;
+  // },
 };
 /**
  * @param {import("express").Request} req

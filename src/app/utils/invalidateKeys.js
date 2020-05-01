@@ -17,6 +17,6 @@ export default {
 
     return keys;
   },
-  watchers: watcherFuctions,
-  change_status: watcherFuctions,
+  // watchers: watcherFuctions,
+  // change_status: watcherFuctions,
 };
