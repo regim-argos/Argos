@@ -1,7 +1,7 @@
 import Service from './Service';
-import Notification from '../data/models/Notification';
 import NotificationValidator from '../Validators/NotificationValidator';
 import BadRequestError from '../Error/BadRequestError';
+import Notification from '../data/NotificationData';
 
 class NotificationService extends Service {
   constructor() {
