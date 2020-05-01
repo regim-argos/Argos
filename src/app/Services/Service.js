@@ -11,11 +11,8 @@ export default class Service {
     return this.model.getAllByUserId(userId, search);
   }
 
-  async verifyAndGet(id, userId, role) {
-    const item = await this.model.getById(
-      id,
-      role === 'ADMIN' ? undefined : userId
-    );
+  async verifyAndGet(id, userId) {
+    const item = await this.model.getById(id, userId);
     if (!item) throw new NotFoundError(this.name);
     return item;
   }

@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon src/server.js",
     "queue": "nodemon src/queue.js",
-    "build": "babel src --out-dir dist --copy-files  ",
+    "build": "babel src --out-dir dist --copy-files --source-maps ",
     "heroku-postbuild": "sucrase ./src -d ./dist --transforms imports && sequelize db:migrate",
     "migrations": "sequelize db:migrate",
     "start": "NODE_ENV=production node ./dist/server.js",

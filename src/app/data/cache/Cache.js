@@ -21,7 +21,6 @@ class Cache {
     return [
       { key: `${this.getKey(userId)}:all`, type: 'ONE' },
       { key: `${this.getKey(userId)}:${id}`, type: 'ONE' },
-      { key: `admin:${this.keyPrefix}:${id}`, type: 'ONE' },
     ];
   }
 

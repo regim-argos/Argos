@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import axios from 'axios';
-import Cache from '../../lib/Redis';
 import Logger from '../../lib/Logger';
+import WatcherData from '../data/WatcherData';
 
 const ArgosApi = axios.create({
   baseURL: `${process.env.API_URL}/v1/pvt/`,
@@ -32,13 +32,9 @@ class Watcher {
   }
 
   async handle({ data }) {
-    const { id } = data;
-    let watcher;
-    watcher = await Cache.get(`admin:watchers:${id}`);
-    if (!watcher) {
-      const response = await ArgosApi.get(`watchers/${id}`);
-      watcher = response.data;
-    }
+    const { id, user_id } = data;
+    const watcher = await WatcherData.getById(id, user_id);
+
     let status;
     let responseTime;
     try {
@@ -46,11 +42,20 @@ class Watcher {
       status = true;
       responseTime = responseAPI.config.requestTime;
     } catch (error) {
-      status = true;
+      status = false;
       responseTime = error.requestTime;
     }
-    if (watcher.status !== status)
-      await ArgosApi.put(`change_status/${id}`, { status });
+    if (watcher.status !== status) {
+      const newWatcher = await WatcherData.updateById(
+        { lastChange: new Date(), status },
+        id,
+        user_id
+      );
+      await ArgosApi.put(`change_status/${id}`, {
+        ...newWatcher,
+        oldLastChange: watcher.lastChange,
+      });
+    }
     Logger.info('Watcher', {
       id: watcher.id,
       requestDate: new Date(),

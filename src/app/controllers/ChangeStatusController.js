@@ -7,10 +7,9 @@ class ChangeStatusController {
       params: { id },
     } = req;
 
-    await WatcherService.changeStatus(req.body.status, id, user_id);
+    await WatcherService.changeStatus(req.body, id, user_id);
 
-    res.status(204).json();
-    return next();
+    return res.status(204).json();
   }
 }
 
