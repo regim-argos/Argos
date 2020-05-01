@@ -1,17 +1,16 @@
 /* eslint-disable import/no-cycle */
 import WatcherValidator from '../Validators/WatcherValidator';
-import Watcher from '../models/Watcher';
 import Queue from '../../lib/Queue';
 import Service from './Service';
 import app from '../../app';
 import UserServices from './UserServices';
 import BadRequestError from '../Error/BadRequestError';
-import Redis from '../../lib/Redis';
 import NotificationService from './NotificationService';
+import WatcherData from '../data/WatcherData';
 
 class WatcherServices extends Service {
   constructor() {
-    super('Watcher', Watcher, WatcherValidator);
+    super('Watcher', WatcherData, WatcherValidator);
   }
 
   async create(data, userId) {
@@ -76,19 +75,11 @@ class WatcherServices extends Service {
     return watcher;
   }
 
-  async changeStatus(status, id, userId) {
-    const oldWatcher = await this.verifyAndGet(id, userId, 'ADMIN');
-
-    const watcher = await this.model.ChangeWatcherStatusById(
-      { status, lastChange: new Date() },
-      id
-    );
-
+  async changeStatus(watcher) {
     await Promise.all(
-      oldWatcher.notifications.map(async (notification) => {
+      watcher.notifications.map(async (notification) => {
         await Queue.add(`${notification.platform}_NOTIFICATION`, {
           watcher,
-          oldWatcher,
           notification,
         });
       })
@@ -98,8 +89,6 @@ class WatcherServices extends Service {
       'ChangeStatus',
       watcher
     );
-    await Redis.invalidate(`${watcher.user_id}:watchers:all`);
-    await Redis.invalidate(`${watcher.user_id}:watchers:${watcher.id}`);
   }
 }
 

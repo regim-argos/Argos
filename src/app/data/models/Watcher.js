@@ -55,15 +55,6 @@ class Watcher extends Model {
         watcher.notifications[0]?.id === null ? [] : watcher.notifications;
     return watcher;
   }
-
-  static async ChangeWatcherStatusById(data, id) {
-    const [, [DocWatcher]] = await this.update(data, {
-      where: { id },
-      returning: true,
-    });
-
-    return DocWatcher && DocWatcher.get();
-  }
 }
 
 export default Watcher;

@@ -8,14 +8,14 @@ class SlackNotification {
   }
 
   async handle({ data }) {
-    const { watcher, oldWatcher, notification } = data;
+    const { watcher, notification } = data;
     const status = watcher.status ? 'UP' : 'DOWN';
     const circle = watcher.status ? ':heavy_check_mark:' : ':red_circle:';
 
     await axios.post(notification.platformData.webhook, {
       text: `${circle} ${getDataFormat(
         watcher.lastChange,
-        oldWatcher.lastChange,
+        watcher.oldLastChange,
         watcher.name,
         watcher.url,
         status

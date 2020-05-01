@@ -1,6 +1,6 @@
 import faker from 'faker';
 import { factory } from 'factory-girl';
-import User from '../src/app/models/User';
+import User from '../src/app/data/models/User';
 
 factory.define('User', User, {
   name: faker.name.findName(),

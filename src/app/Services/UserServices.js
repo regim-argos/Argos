@@ -1,4 +1,4 @@
-import User from '../models/User';
+import User from '../data/models/User';
 import HashService from './HashService';
 import UserValidator from '../Validators/UserValidator';
 import Queue from '../../lib/Queue';

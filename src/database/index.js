@@ -1,12 +1,12 @@
 import Sequelize from 'sequelize';
 
-import User from '../app/models/User';
+import User from '../app/data/models/User';
 
 import databaseConfig from '../config/database';
-import Hash from '../app/models/Hash';
-import File from '../app/models/File';
-import Watcher from '../app/models/Watcher';
-import Notification from '../app/models/Notification';
+import Hash from '../app/data/models/Hash';
+import File from '../app/data/models/File';
+import Watcher from '../app/data/models/Watcher';
+import Notification from '../app/data/models/Notification';
 
 const models = [User, Hash, File, Watcher, Notification];
 
