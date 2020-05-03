@@ -18,7 +18,7 @@ class Model extends SequelizeModel {
 
   static async getById(id, user_id) {
     const Doc = await this.findOne({
-      where: user_id,
+      where: { id, user_id },
     });
 
     return Doc && Doc.get();
