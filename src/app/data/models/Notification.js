@@ -6,6 +6,8 @@ class Notification extends Model {
     super.init(
       {
         platform: Sequelize.STRING,
+        name: Sequelize.STRING,
+        active: Sequelize.BOOLEAN,
         platformData: Sequelize.JSON,
       },
       {
