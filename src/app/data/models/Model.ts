@@ -1,6 +1,6 @@
 import { Model as SequelizeModel } from 'sequelize';
 
-class Model extends SequelizeModel {
+abstract class Model extends SequelizeModel {
   static init(dataTypes, sequelize) {
     super.init(dataTypes, sequelize);
 
