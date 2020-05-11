@@ -31,6 +31,10 @@ module.exports = {
     '@typescript-eslint/interface-name-prefix': 'off',
     camelcase: 'off',
     'no-unused-vars': ['error', { argsIgnorePattern: 'next' }],
+    '@typescript-eslint/no-unused-vars': [
+      'error',
+      { argsIgnorePattern: 'next' },
+    ],
     'import/extensions': [
       'error',
       'ignorePackages',

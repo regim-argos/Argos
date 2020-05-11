@@ -53,7 +53,7 @@ class UserServices {
     await Queue.add(ForgetPassword.key, { name, email, hash });
   }
 
-  async createConfirmEmailHash(email: string, user: User) {
+  async createConfirmEmailHash(email: string, user?: User) {
     const { id, name, active } =
       user || (await this.verifyAndGetUserByEmail(email));
     if (active) throw new BadRequestError('Email already confirmed');

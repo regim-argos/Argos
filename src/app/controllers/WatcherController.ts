@@ -2,9 +2,7 @@ import WatcherService from '../Services/WatcherService';
 import Controller from './Controller';
 
 class WatcherController extends Controller {
-  constructor() {
-    super(WatcherService);
-  }
+  protected service = WatcherService;
 }
 
 export default new WatcherController();

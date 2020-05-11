@@ -1,7 +1,8 @@
+import { Request, Response, NextFunction } from 'express';
 import UserServices from '../Services/UserServices';
 
 class ForgetPasswordController {
-  async store(req, res) {
+  async store(req: Request, res: Response, next: NextFunction) {
     const {
       body: { email },
     } = req;
@@ -9,7 +10,7 @@ class ForgetPasswordController {
     return res.status(204).json();
   }
 
-  async update(req, res) {
+  async update(req: Request, res: Response, next: NextFunction) {
     const {
       params: { hash },
     } = req;

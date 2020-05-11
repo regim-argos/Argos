@@ -1,11 +1,13 @@
 import jwt from 'jsonwebtoken';
 import * as Yup from 'yup';
+import { Request, Response, NextFunction } from 'express';
 
 import authConfig from '../../config/auth';
 import UserServices from '../Services/UserServices';
 
+// TODO refazer session
 class SessionController {
-  async store(req, res) {
+  async store(req: Request, res: Response, next: NextFunction) {
     const schema = Yup.object().shape({
       email: Yup.string().email().required(),
       password: Yup.string().required(),
@@ -36,7 +38,7 @@ class SessionController {
       },
       token: jwt.sign(
         { id, role },
-        authConfig.secret,
+        authConfig.secret as string,
         role === 'ADMIN'
           ? {}
           : {

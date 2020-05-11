@@ -1,7 +1,8 @@
+import { Request, Response, NextFunction } from 'express';
 import UserServices from '../Services/UserServices';
 
 class UserController {
-  async store(req, res) {
+  async store(req: Request, res: Response, next: NextFunction) {
     const { id, name, email } = await UserServices.create(req.body);
     return res.status(201).json({
       id,
@@ -10,19 +11,18 @@ class UserController {
     });
   }
 
-  async update(req, res, next) {
+  async update(req: Request, res: Response, next: NextFunction) {
     const { id, name, email, imageId, image } = await UserServices.update(
       req.body,
       req.userId
     );
-    res.json({
+    return res.status(200).json({
       id,
       name,
       email,
       imageId,
       image,
     });
-    return next();
   }
 }
 
