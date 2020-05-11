@@ -1,9 +1,7 @@
 import Cache from './Cache';
 
 class WatcherCache extends Cache {
-  get keyPrefix() {
-    return 'watchers';
-  }
+  protected keyPrefix = 'watchers';
 }
 
 export default new WatcherCache();

@@ -1,24 +1,33 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import * as Yup from 'yup';
 import BadRequestError from '../Error/BadRequestError';
 
 class Validator {
-  async validate(schema, data) {
+  protected createSchema!: Yup.ObjectSchema | Yup.ArraySchema<Yup.ObjectSchema>;
+
+  protected updateSchema!: Yup.ObjectSchema | Yup.ArraySchema<Yup.ObjectSchema>;
+
+  async validate<T>(
+    schema: Yup.ObjectSchema | Yup.ArraySchema<Yup.ObjectSchema>,
+    data: any
+  ) {
     try {
       const response = await schema.validate(data, {
         abortEarly: true,
         stripUnknown: true,
       });
-      return response;
+      return (response as unknown) as T;
     } catch (err) {
       throw new BadRequestError(err.errors[0]);
     }
   }
 
-  async createValidator(payload) {
-    return this.validate(this.createSchema, payload);
+  async createValidator<T>(payload: any) {
+    return this.validate<T>(this.createSchema, payload);
   }
 
-  async updateValidator(payload) {
-    return this.validate(this.updateSchema, payload);
+  async updateValidator<T>(payload: any) {
+    return this.validate<T>(this.updateSchema, payload);
   }
 }
 

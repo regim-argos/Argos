@@ -1,24 +1,26 @@
 import NotFoundError from '../Error/NotFoundError';
+import Validator from '../Validators/Validator';
+import Data from '../data/Data';
 
-export default class Service {
-  constructor(name, model, validator) {
-    this.model = model;
-    this.name = name;
-    this.validator = validator;
+export default abstract class Service<U> {
+  public name!: string;
+
+  protected model!: Data<U>;
+
+  public validator!: Validator;
+
+  async getAllByUserId(userId: number) {
+    return this.model.getAllByUserId(userId);
   }
 
-  async getAllByUserId(userId, search) {
-    return this.model.getAllByUserId(userId, search);
-  }
-
-  async verifyAndGet(id, userId) {
+  async verifyAndGet(id: number, userId: number) {
     const item = await this.model.getById(id, userId);
     if (!item) throw new NotFoundError(this.name);
     return item;
   }
 
-  async create(data, userId) {
-    const validated = await this.validator.createValidator(data);
+  async create(data: object, userId: number) {
+    const validated = await this.validator.createValidator<U>(data);
     await this.dbValidatorCreate(validated, userId);
 
     const item = await this.model.create(validated, userId);
@@ -26,26 +28,45 @@ export default class Service {
     return item;
   }
 
-  async update(data, id, userId, returnOld) {
-    const validated = await this.validator.updateValidator(data);
+  async update(data: object, id: number, userId: number) {
+    const validated = await this.validator.updateValidator<U>(data);
     const oldValue = await this.verifyAndGet(id, userId);
 
     await this.dbValidatorUpdate(validated, userId, id, oldValue);
     const updated = await this.model.updateById(validated, id, userId);
 
-    if (!returnOld) return updated;
+    return updated;
+  }
+
+  async updateWithReturn(data: object, id: number, userId: number) {
+    const validated = await this.validator.updateValidator<U>(data);
+    const oldValue = await this.verifyAndGet(id, userId);
+
+    await this.dbValidatorUpdate(validated, userId, id, oldValue);
+    const updated = await this.model.updateById(validated, id, userId);
+
     return { old: oldValue, newValue: updated };
   }
 
-  async delete(id, userId) {
+  async delete(id: number, userId: number) {
     const item = await this.verifyAndGet(id, userId);
     await this.model.deleteById(id, userId);
     return item;
   }
 
-  // eslint-disable-next-line no-empty-function
-  async dbValidatorCreate() {}
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars, no-empty-function, @typescript-eslint/no-empty-function
+  async dbValidatorCreate(validated: U, userId: number) {}
 
-  // eslint-disable-next-line no-empty-function
-  async dbValidatorUpdate() {}
+  // eslint-disable-next-line no-empty-function, @typescript-eslint/no-unused-vars, no-unused-vars, no-empty-function
+  async dbValidatorUpdate(
+    // eslint-disable-next-line no-empty-function, @typescript-eslint/no-unused-vars, no-unused-vars, no-empty-function
+    validated: U,
+    // eslint-disable-next-line no-empty-function, @typescript-eslint/no-unused-vars, no-unused-vars, no-empty-function
+    userId: number,
+    // eslint-disable-next-line no-empty-function, @typescript-eslint/no-unused-vars, no-unused-vars, no-empty-function
+    id?: number,
+    // eslint-disable-next-line no-empty-function, @typescript-eslint/no-unused-vars, no-unused-vars, no-empty-function
+    oldValue?: U
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+  ) {}
 }

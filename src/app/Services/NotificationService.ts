@@ -1,14 +1,17 @@
 import Service from './Service';
 import NotificationValidator from '../Validators/NotificationValidator';
 import BadRequestError from '../Error/BadRequestError';
-import Notification from '../data/NotificationData';
+import NotificationData from '../data/NotificationData';
+import Notification from '../data/models/Notification';
 
-class NotificationService extends Service {
-  constructor() {
-    super('Notification', Notification, NotificationValidator);
-  }
+class NotificationService extends Service<Notification> {
+  public name = 'Notification';
 
-  async getAllByIds(ids = [], userId) {
+  protected model = NotificationData;
+
+  public validator = NotificationValidator;
+
+  async getAllByIds(ids: number[] = [], userId: number) {
     const notifications = await this.model.getAllByIds(ids, userId);
     if (ids.length !== notifications.length)
       throw new BadRequestError('Notification(s) not found');

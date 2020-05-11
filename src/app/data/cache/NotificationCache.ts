@@ -2,11 +2,9 @@ import Cache from './Cache';
 import WatcherCache from './WatcherCache';
 
 class NotificationCache extends Cache {
-  get keyPrefix() {
-    return 'notifications';
-  }
+  protected keyPrefix = 'notifications';
 
-  invalidateUpdateKeys(userId, id) {
+  invalidateUpdateKeys(userId: number, id: number) {
     return [
       ...super.invalidateUpdateKeys(userId, id),
       { key: `${WatcherCache.getKey(userId)}`, type: 'MANY' },

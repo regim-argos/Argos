@@ -1,24 +1,22 @@
+import Service from '../Services/Service';
+
 export default class Controller {
-  constructor(service) {
-    this.service = service;
-  }
+  protected service!: Service<any>;
 
   async index(req, res, next) {
     const { userId } = req;
-    const { search } = req.query;
 
-    const items = await this.service.getAllByUserId(userId, search);
+    const items = await this.service.getAllByUserId(userId);
     return res.status(200).json(items);
   }
 
   async show(req, res, next) {
     const {
       userId,
-      userRole,
       params: { id },
     } = req;
 
-    const item = await this.service.verifyAndGet(id, userId, userRole);
+    const item = await this.service.verifyAndGet(id, userId);
 
     return res.status(200).json(item);
   }

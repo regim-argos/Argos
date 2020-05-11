@@ -1,9 +1,18 @@
 import Sequelize, { Model } from 'sequelize';
 
 class File extends Model {
-  public name!: string;
-  public path!: string;
-  public url!: string;
+  id!: number;
+
+  name!: string;
+
+  path!: string;
+
+  url!: string;
+
+  user_id!: number;
+
+  userId!: number;
+
   static initModel(sequelize: Sequelize.Sequelize) {
     this.init(
       {
@@ -12,7 +21,7 @@ class File extends Model {
         url: {
           type: Sequelize.VIRTUAL,
           get() {
-            //@ts-ignore
+            // @ts-ignore
             return `${process.env.FILES_URL}/${this.path}`;
           },
         },
@@ -25,10 +34,8 @@ class File extends Model {
     // return this;
   }
 
-  static associate(models: {
-    [x: string]: Sequelize.ModelCtor<Sequelize.Model<any, any>>;
-    User?: any;
-  }) {
+  // @ts-ignore
+  static associate(models) {
     this.belongsTo(models.User, {
       foreignKey: { field: 'user_id', name: 'userId' },
       as: 'user',
@@ -38,16 +45,16 @@ class File extends Model {
   static async getFileById(id: number, userId: number) {
     const DocFile = await this.findOne({ where: { id, userId } });
 
-    return DocFile && DocFile.get();
+    return DocFile;
   }
 
-  static async createOne(data: any, userId: number) {
+  static async createOne(data: Partial<File>, userId: number) {
     const DocFile = await this.create({
       ...data,
       userId,
     });
 
-    return DocFile && DocFile.get();
+    return DocFile;
   }
 }
 

@@ -3,6 +3,28 @@ import bcrypt from 'bcryptjs';
 import File from './File';
 
 class User extends Model {
+  id!: number;
+
+  name!: string;
+
+  email!: string;
+
+  defaultDelay!: number;
+
+  watcherNumber!: number;
+
+  password!: string;
+
+  password_hash!: string;
+
+  active!: boolean;
+
+  role!: 'DEFAULT' | 'ADMIN';
+
+  image!: File;
+
+  imageId!: number;
+
   static get include() {
     return [
       {
@@ -12,8 +34,8 @@ class User extends Model {
     ];
   }
 
-  static init(sequelize) {
-    super.init(
+  static initModel(sequelize: Sequelize.Sequelize) {
+    this.init(
       {
         name: Sequelize.STRING,
         email: Sequelize.STRING,
@@ -29,7 +51,7 @@ class User extends Model {
       }
     );
 
-    this.addHook('beforeSave', async (user) => {
+    this.addHook('beforeSave', async (user: User) => {
       if (user.password) {
         user.password_hash = await bcrypt.hash(user.password, 8);
       }
@@ -38,6 +60,7 @@ class User extends Model {
     return this;
   }
 
+  // @ts-ignore
   static associate(models) {
     this.belongsTo(models.File, {
       foreignKey: { field: 'image_id', name: 'imageId' },
@@ -45,20 +68,20 @@ class User extends Model {
     });
   }
 
-  checkPassword(password) {
+  checkPassword(password: string) {
     return bcrypt.compare(password, this.password_hash);
   }
 
-  static async getUserById(id) {
+  static async getUserById(id: number) {
     const DocUser = await this.findOne({
       where: { id },
       include: this.include,
     });
 
-    return DocUser && DocUser.get();
+    return DocUser;
   }
 
-  static async getUserByEmail(email) {
+  static async getUserByEmail(email: string) {
     const DocUser = await this.findOne({
       where: { email },
       include: this.include,
@@ -67,20 +90,23 @@ class User extends Model {
     return DocUser;
   }
 
-  static async create(data) {
-    const DocUser = await super.create({
+  static async createOne(data: Partial<User>) {
+    const DocUser = await this.create({
       ...data,
       active: false,
     });
-    return DocUser && DocUser.get();
+    return DocUser;
   }
 
-  static async update(data, id) {
+  static async updateOne(data: Partial<User>, id: number) {
     const DocUser = await this.findOne({ where: { id } });
-    DocUser.set(data);
-    const user = await DocUser.save(data);
+    if (DocUser) {
+      DocUser.set(data);
+      const user = await DocUser.save();
 
-    return user && user.get();
+      return user;
+    }
+    throw new Error('not found user');
   }
 }
 

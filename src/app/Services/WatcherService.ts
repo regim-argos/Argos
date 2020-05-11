@@ -7,13 +7,16 @@ import UserServices from './UserServices';
 import BadRequestError from '../Error/BadRequestError';
 import NotificationService from './NotificationService';
 import WatcherData from '../data/WatcherData';
+import Watcher from '../data/models/Watcher';
 
-class WatcherServices extends Service {
-  constructor() {
-    super('Watcher', WatcherData, WatcherValidator);
-  }
+class WatcherServices extends Service<Watcher> {
+  public name = 'Watcher';
 
-  async create(data, userId) {
+  protected model = WatcherData;
+
+  public validator = WatcherValidator;
+
+  async create(data: object, userId: number) {
     const watcher = await super.create(data, userId);
 
     if (watcher.active)
@@ -24,7 +27,7 @@ class WatcherServices extends Service {
     return watcher;
   }
 
-  async dbValidatorCreate(validated, userId) {
+  async dbValidatorCreate(validated: Watcher, userId: number) {
     if (validated.notifications?.length)
       await NotificationService.getAllByIds(
         validated.notifications.map((item) => item.id),
@@ -42,7 +45,7 @@ class WatcherServices extends Service {
       );
   }
 
-  async dbValidatorUpdate(validated, userId) {
+  async dbValidatorUpdate(validated: Watcher, userId: number) {
     if (validated.notifications?.length)
       await NotificationService.getAllByIds(
         validated.notifications.map((item) => item.id),
@@ -55,8 +58,8 @@ class WatcherServices extends Service {
       );
   }
 
-  async update(data, id, userId) {
-    const { old, newValue } = await super.update(data, id, userId, true);
+  async update(data: object, id: number, userId: number) {
+    const { old, newValue } = await super.updateWithReturn(data, id, userId);
 
     await Queue.remove('Watcher', old.delay * 1000, old.id);
     if (newValue.active)
@@ -67,7 +70,7 @@ class WatcherServices extends Service {
     return newValue;
   }
 
-  async delete(id, userId) {
+  async delete(id: number, userId: number) {
     const watcher = await super.delete(id, userId);
 
     await Queue.remove('Watcher', watcher.delay * 1000, watcher.id);
@@ -75,7 +78,7 @@ class WatcherServices extends Service {
     return watcher;
   }
 
-  async changeStatus(watcher) {
+  async changeStatus(watcher: Watcher) {
     await Promise.all(
       watcher.notifications.map(async (notification) => {
         await Queue.add(`${notification.platform}_NOTIFICATION`, {

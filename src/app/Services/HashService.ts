@@ -6,17 +6,18 @@ import Hash from '../data/models/Hash';
 // import ProductService from './ProductService';
 
 class HashServices {
-  constructor() {
-    this.model = Hash;
-  }
+  protected model = Hash;
 
-  async verifyAndGetHash(hash, type) {
+  async verifyAndGetHash(hash: string, type: string) {
     const hashDb = await this.model.getHashByHash(hash, type);
     if (!hashDb) throw new BadRequestError('Invalid token');
     return hashDb;
   }
 
-  async create(userId, type = 'CONFIRM_EMAIL') {
+  async create(
+    userId: number,
+    type: 'CONFIRM_EMAIL' | 'CHANGE_PASSWORD' = 'CONFIRM_EMAIL'
+  ) {
     // const ValidatedHash = await HashValidator.createValidator(data);
 
     const payload = {
@@ -28,7 +29,7 @@ class HashServices {
     return hash;
   }
 
-  async delete(id) {
+  async delete(id: number) {
     const deleteds = await this.model.deleteHashById(id);
     if (deleteds) throw new BadRequestError('Invalid token');
     return true;

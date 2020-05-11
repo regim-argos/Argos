@@ -1,7 +1,7 @@
 import Redis from '../../../lib/Redis';
 
 class Cache {
-  get keyPrefix() {
+  protected get keyPrefix(): string {
     throw new Error('need overwrite KeyPrefix');
   }
 
@@ -9,38 +9,41 @@ class Cache {
     return Redis;
   }
 
-  getKey(userId) {
+  getKey(userId: number) {
     return `${userId}:${this.keyPrefix}`;
   }
 
-  invalidatesCreateKeys(userId) {
+  invalidatesCreateKeys(userId: number) {
     return [{ key: `${this.getKey(userId)}:all`, type: 'ONE' }];
   }
 
-  invalidateUpdateKeys(userId, id) {
+  invalidateUpdateKeys(userId: number, id: number) {
     return [
       { key: `${this.getKey(userId)}:all`, type: 'ONE' },
       { key: `${this.getKey(userId)}:${id}`, type: 'ONE' },
     ];
   }
 
-  async getCache(userId, key) {
+  async getCache(userId: number, key: string | number) {
     return Redis.get(`${this.getKey(userId)}:${key}`);
   }
 
-  async setCache(userId, key, data) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async setCache(userId: number, key: string | number, data: any) {
     await Redis.set(`${this.getKey(userId)}:${key}`, data);
   }
 
-  async invalidateCreate(userId) {
+  async invalidateCreate(userId: number) {
     return this.invalidation(this.invalidatesCreateKeys(userId));
   }
 
-  async invalidateUpdate(userId, id) {
+  async invalidateUpdate(userId: number, id: number) {
     return this.invalidation(this.invalidateUpdateKeys(userId, id));
   }
 
-  async invalidation(invalidateKeyArray) {
+  async invalidation(
+    invalidateKeyArray: { key: string | number; type: string }[]
+  ) {
     return Promise.all(
       invalidateKeyArray.map(async ({ key, type }) => {
         if (type === 'MANY') {
