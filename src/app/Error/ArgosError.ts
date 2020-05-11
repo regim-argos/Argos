@@ -1,5 +1,16 @@
 export default class ArgosError extends Error {
-  constructor(message, type, status) {
+  message!: string;
+
+  type!: string;
+
+  status!: number;
+
+  body: {
+    status: string;
+    message: string;
+  };
+
+  constructor(message: string, type: string, status: number) {
     super();
     this.message = message;
     this.type = type;
