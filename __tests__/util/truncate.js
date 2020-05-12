@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/camelcase */
 import bcrypt from 'bcryptjs';
 import database from '../../src/database';
 
