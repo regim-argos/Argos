@@ -13,7 +13,9 @@ class Notification extends Model {
 
   public active!: boolean;
 
-  public platformData!: {};
+  public platformData!: {
+    webhook: string;
+  };
 
   static initModel(sequelize: Sequelize.Sequelize) {
     this.init(

@@ -1,11 +1,18 @@
 import Mail from '../../lib/Mail';
 
+interface ConfirmEmailData {
+  data: {
+    name: string;
+    email: string;
+    hash: string;
+  };
+}
 class ConfirmEmail {
   get key() {
     return 'ConfirmEmail';
   }
 
-  async handle({ data }) {
+  async handle({ data }: ConfirmEmailData) {
     const { name, email, hash } = data;
 
     await Mail.sendMail({

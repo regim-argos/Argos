@@ -2,6 +2,11 @@
 import axios from 'axios';
 import Logger from '../../lib/Logger';
 import WatcherData from '../data/WatcherData';
+import WatcherModel from '../data/models/Watcher';
+
+interface WatcherMsgData {
+  data: WatcherModel;
+}
 
 const ArgosApi = axios.create({
   baseURL: `${process.env.API_URL}/v1/pvt/`,
@@ -12,11 +17,13 @@ const ArgosApi = axios.create({
 
 const timingAxios = axios.create();
 timingAxios.interceptors.request.use((config) => {
+  // @ts-ignore
   config.requestStartTime = Date.now();
   return config;
 });
 timingAxios.interceptors.response.use(
   (response) => {
+    // @ts-ignore
     response.config.requestTime = Date.now() - response.config.requestStartTime;
     return response;
   },
@@ -31,7 +38,7 @@ class Watcher {
     return 'Watcher';
   }
 
-  async handle({ data }) {
+  async handle({ data }: WatcherMsgData) {
     const { id, user_id } = data;
     const watcher = await WatcherData.getById(id, user_id);
 
@@ -40,6 +47,7 @@ class Watcher {
     try {
       const responseAPI = await timingAxios.get(watcher.url);
       status = true;
+      // @ts-ignore
       responseTime = responseAPI.config.requestTime;
     } catch (error) {
       status = false;
@@ -47,7 +55,7 @@ class Watcher {
     }
     if (watcher.status !== status) {
       const newWatcher = await WatcherData.updateById(
-        { lastChange: new Date(), status },
+        { lastChange: new Date().toISOString(), status },
         id,
         user_id
       );

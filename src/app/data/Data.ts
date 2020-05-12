@@ -4,7 +4,7 @@ interface IModel<T> {
   getAllByUserId(userId: number): Promise<T[]>;
   getById(id: number, userId: number): Promise<T | null>;
   createOne(data: T, userId: number): Promise<T>;
-  updateById(data: T, id: number, userId: number): Promise<T>;
+  updateById(data: Partial<T>, id: number, userId: number): Promise<T>;
   deleteById(id: number, userId: number): Promise<number>;
 }
 class Data<T> {
@@ -42,7 +42,7 @@ class Data<T> {
     return value;
   }
 
-  async updateById(data: T, id: number, userId: number) {
+  async updateById(data: Partial<T>, id: number, userId: number) {
     const value = await this.model.updateById(data, id, userId);
     await this.cache?.invalidateUpdate(userId, id);
     return value;

@@ -1,11 +1,18 @@
 import Mail from '../../lib/Mail';
 
+interface ForgetPasswordEmailData {
+  data: {
+    name: string;
+    email: string;
+    hash: string;
+  };
+}
 class ForgetPassword {
   get key() {
     return 'ForgetPassword';
   }
 
-  async handle({ data }) {
+  async handle({ data }: ForgetPasswordEmailData) {
     const { name, email, hash } = data;
 
     await Mail.sendMail({
