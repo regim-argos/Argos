@@ -11,21 +11,14 @@
       "outFiles": ["${workspaceFolderBasename}/**/*.js"]
     },
     {
-      "name": "Workers",
       "type": "node",
-      "request": "launch",
-      "program": "${workspaceRoot}/src/queue.js",
-      "stopOnEntry": false,
-      "args": [],
-      "cwd": "${workspaceRoot}",
-      "preLaunchTask": "build",
-      "runtimeExecutable": null,
-      "runtimeArgs": ["--nolazy"],
-      "env": {
-        "NODE_ENV": "development"
-      },
-      "sourceMaps": true,
-      "outDir": "${workspaceRoot}/dist"
+      "request": "attach",
+      "protocol": "inspector",
+      "port": 9230,
+      "restart": true,
+      "name": "Queue",
+      "skipFiles": ["<node_internals>/**"],
+      "outFiles": ["${workspaceFolderBasename}/**/*.js"]
     }
   ]
 }

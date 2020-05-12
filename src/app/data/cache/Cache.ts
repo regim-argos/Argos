@@ -1,9 +1,7 @@
 import Redis from '../../../lib/Redis';
 
 class Cache {
-  protected get keyPrefix(): string {
-    throw new Error('need overwrite KeyPrefix');
-  }
+  protected keyPrefix!: string;
 
   get Redis() {
     return Redis;
