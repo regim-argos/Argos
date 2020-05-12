@@ -5,7 +5,7 @@ import multerConfig from '../../../../config/multer';
 import FileController from '../../../controllers/FileController';
 
 const upload = multer(multerConfig);
-const routes = new Router();
+const routes = Router();
 
 routes.post('/files', upload.single('file'), FileController.store);
 

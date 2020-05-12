@@ -2,7 +2,7 @@ import { Router } from 'express';
 
 import NotificationController from '../../../controllers/NotificationController';
 
-const routes = new Router();
+const routes = Router();
 
 routes.get('/', (req, res, next) =>
   NotificationController.index(req, res, next)
@@ -20,4 +20,4 @@ routes.delete('/:id', (req, res, next) =>
   NotificationController.delete(req, res, next)
 );
 
-export default new Router().use('/notifications', routes);
+export default Router().use('/notifications', routes);

@@ -2,9 +2,9 @@ import { Router } from 'express';
 
 import ConfirmEmailController from '../../../controllers/ConfirmEmailController';
 
-const routes = new Router();
+const routes = Router();
 
 routes.post('/', ConfirmEmailController.store);
 routes.put('/:hash', ConfirmEmailController.update);
 
-export default new Router().use('/confirmEmail', routes);
+export default Router().use('/confirmEmail', routes);

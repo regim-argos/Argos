@@ -7,7 +7,7 @@ import watcherRoutes from './watcher.routes';
 import changeStatusRoutes from './changeStatus.routes';
 import notificationRoutes from './notification.routes';
 
-const routes = new Router();
+const routes = Router();
 
 routes.use(testpvt);
 routes.use(userRoutes);

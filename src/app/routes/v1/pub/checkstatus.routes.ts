@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-const routes = new Router();
+const routes = Router();
 
 routes.get('/', (req, res) => res.send('ok Argos'));
 

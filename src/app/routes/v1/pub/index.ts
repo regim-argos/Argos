@@ -7,7 +7,7 @@ import bullBoard from './bullBoard.routes';
 import session from './session.routes';
 import user from './user.routes';
 
-const routes = new Router();
+const routes = Router();
 
 routes.use(user);
 routes.use(confirmEmail);
