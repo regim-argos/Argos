@@ -42,15 +42,15 @@ class Cache {
     return cached ? JSON.parse(cached) : null;
   }
 
-  invalidate(key: string) {
+  invalidate(key: string | number) {
     if (!this.redis || this.redis.status !== 'ready') {
       return null;
     }
 
-    return this.redis.del(key);
+    return this.redis.del(key as string);
   }
 
-  async invalidatePrefix(prefix: string) {
+  async invalidatePrefix(prefix: string | number) {
     if (!this.redis || this.redis.status !== 'ready') {
       return null;
     }
