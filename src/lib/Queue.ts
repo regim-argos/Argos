@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Bull from 'bull';
 import { setQueues } from 'bull-board';
 import ConfirmEmailJob from '../app/jobs/ConfirmEmail';
@@ -16,10 +17,17 @@ const jobs = [
   SlackNotification,
 ];
 
-class Queue {
-  constructor() {
-    this.queues = {};
+interface ArgosQueues {
+  [x: string]: {
+    bull: Bull.Queue;
+    handle: (data: any) => void;
+  };
+}
 
+class Queue {
+  protected queues: ArgosQueues = {};
+
+  constructor() {
     this.init();
   }
 
@@ -36,7 +44,7 @@ class Queue {
             attempts: 30,
             removeOnComplete: true,
           },
-          redis: process.env.URL_REDIS || redisConfig,
+          redis: (process.env.URL_REDIS as string) || redisConfig,
         }),
         handle,
       };
@@ -44,11 +52,15 @@ class Queue {
     setQueues(Object.keys(this.queues).map((key) => this.queues[key].bull));
   }
 
-  add(queue, job) {
+  add(queue: string, job: any) {
     return this.queues[queue].bull.add(job);
   }
 
-  addRepeatJob(queue, job, repeat) {
+  addRepeatJob(
+    queue: string,
+    job: any,
+    repeat: Bull.CronRepeatOptions | Bull.EveryRepeatOptions | undefined
+  ) {
     return this.queues[queue].bull.add(job, {
       repeat,
       jobId: job.id,
@@ -57,7 +69,7 @@ class Queue {
     });
   }
 
-  async remove(queue, time, jobId) {
+  async remove(queue: string, time: number, jobId: number) {
     await this.queues[queue].bull.removeRepeatable({ every: time, jobId });
   }
 
@@ -73,7 +85,7 @@ class Queue {
     });
   }
 
-  handleFailure(job, err) {
+  handleFailure(_: any, err: Error) {
     // eslint-disable-next-line no-console
     Logger.error('WatcherError', err);
   }

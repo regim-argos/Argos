@@ -2,14 +2,15 @@ import winston from 'winston';
 import DatadogWinston from 'datadog-winston';
 
 class Logger {
+  protected logger = winston.createLogger({
+    exitOnError: false,
+    format: winston.format.json(),
+  });
+
   constructor() {
-    this.logger = winston.createLogger({
-      exitOnError: false,
-      format: winston.format.json(),
-    });
     this.logger.add(
       new DatadogWinston({
-        apiKey: process.env.API_DATADOG,
+        apiKey: process.env.API_DATADOG as string,
         hostname: 'argos',
         service: 'argos',
         ddsource: 'node.js',
@@ -17,12 +18,12 @@ class Logger {
     );
   }
 
-  info(type, data) {
+  info(type: string, data: object) {
     this.logger.info(type, data);
   }
 
-  error(type, data) {
-    this.logger.log('error', { data, level: 'error' });
+  error(type: string, data: object) {
+    this.logger.log('error', type, { data, level: 'error' });
   }
 }
 

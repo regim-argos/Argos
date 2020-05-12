@@ -1,10 +1,11 @@
-import Redis from 'ioredis';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import Redis, { Redis as IRedis } from 'ioredis';
 
 const config = {
   host: process.env.REDIS_HOST,
   password: process.env.REDIS_PASS,
   keyPrefix: 'cache:',
-  retryStrategy(times) {
+  retryStrategy(times: number) {
     const delay = Math.min(times * 5000, 200000);
     return delay;
   },
@@ -14,15 +15,16 @@ const config = {
 const configRedis = process.env.URL_REDIS || config;
 
 class Cache {
+  protected redis: IRedis;
+
   constructor() {
-    if (process.env.REDIS_CLUSTER) {
-      this.redis = new Redis.Cluster(configRedis, { keyPrefix: 'cache:' });
-    } else {
-      this.redis = new Redis(configRedis, { keyPrefix: 'cache:' });
-    }
+    this.redis = new Redis({
+      ...(configRedis as Redis.RedisOptions),
+      keyPrefix: 'cache:',
+    });
   }
 
-  set(key, value, expires = process.env.DEFAULT_CACHE_EXPIRATION) {
+  set(key: string, value: any, expires = process.env.DEFAULT_CACHE_EXPIRATION) {
     if (!this.redis || this.redis.status !== 'ready') {
       return null;
     }
@@ -30,7 +32,7 @@ class Cache {
     return this.redis.set(key, JSON.stringify(value), 'EX', expires);
   }
 
-  async get(key) {
+  async get(key: any) {
     if (!this.redis || this.redis.status !== 'ready') {
       return null;
     }
@@ -40,7 +42,7 @@ class Cache {
     return cached ? JSON.parse(cached) : null;
   }
 
-  invalidate(key) {
+  invalidate(key: string) {
     if (!this.redis || this.redis.status !== 'ready') {
       return null;
     }
@@ -48,7 +50,7 @@ class Cache {
     return this.redis.del(key);
   }
 
-  async invalidatePrefix(prefix) {
+  async invalidatePrefix(prefix: string) {
     if (!this.redis || this.redis.status !== 'ready') {
       return null;
     }

@@ -1,9 +1,10 @@
 import './bootstrap';
 import './tracer';
 
+// @ts-ignore
 import Youch from 'youch';
 import path from 'path';
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import connect_datadog from 'connect-datadog';
 import 'express-async-errors';
 import cors from 'cors';
@@ -14,23 +15,25 @@ import routesV1 from './app/routes';
 import db from './database';
 import sentryConfig from './config/sentry';
 import SocketIo from './lib/SocketIo';
+import ArgosError from './app/Error/ArgosError';
 
 class App {
+  protected app = express();
+
+  server: http.Server;
+
+  socketIo: SocketIo;
+
   constructor() {
-    this.app = express();
-    this.server = http.Server(this.app);
+    this.server = new http.Server(this.app);
 
     if (process.env.NODE_ENV === 'production') Sentry.init(sentryConfig);
 
-    this.socket();
+    this.socketIo = new SocketIo(this.server);
 
     this.middlewares();
     this.routes();
     this.exceptionHandler();
-  }
-
-  socket() {
-    this.socketIo = new SocketIo(this.server);
   }
 
   middlewares() {
@@ -42,7 +45,7 @@ class App {
       '/files',
       express.static(path.resolve(__dirname, '..', 'tmp', 'uploads'))
     );
-    this.app.use((req, res, next) => {
+    this.app.use((req: Request, res, next) => {
       req.io = this.socketIo;
 
       next();
@@ -55,26 +58,34 @@ class App {
   }
 
   exceptionHandler() {
-    this.app.use(async (err, req, res, next) => {
-      if (err.name === 'ArgosValidationError') {
-        return res.status(err.status).json(err.body);
-      }
-      if (err.name === 'MulterError') {
-        const { message } = err;
-        const error = {
-          status: 'error',
-          message,
-        };
-        return res.status(400).json(error);
-      }
-      if (process.env.NODE_ENV === 'development') {
-        const errors = await new Youch(err, req).toJSON();
+    this.app.use(
+      async (
+        err: Error | ArgosError,
+        req: Request,
+        res: Response,
+        next: NextFunction
+      ) => {
+        if (err.name === 'ArgosValidationError') {
+          // @ts-ignore
+          return res.status(err.status).json(err.body);
+        }
+        if (err.name === 'MulterError') {
+          const { message } = err;
+          const error = {
+            status: 'error',
+            message,
+          };
+          return res.status(400).json(error);
+        }
+        if (process.env.NODE_ENV === 'development') {
+          const errors = await new Youch(err, req).toJSON();
 
-        return res.status(500).json(errors);
-      }
+          return res.status(500).json(errors);
+        }
 
-      return res.status(500).json({ error: 'Internal server error' });
-    });
+        return res.status(500).json({ error: 'Internal server error' });
+      }
+    );
   }
 
   close() {
