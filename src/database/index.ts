@@ -1,4 +1,4 @@
-import { Sequelize } from 'sequelize';
+import { Sequelize, Options } from 'sequelize';
 
 import User from '../app/data/models/User';
 
@@ -12,7 +12,9 @@ import Notification from '../app/data/models/Notification';
 const models = [User, Hash, File, Watcher, Notification];
 
 class Database {
-  protected connection: Sequelize = new Sequelize(databaseConfig);
+  protected connection: Sequelize = new Sequelize(
+    (databaseConfig as unknown) as Options
+  );
 
   constructor() {
     this.init();
