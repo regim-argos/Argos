@@ -1,4 +1,6 @@
-export default async (req, res, next) => {
+import { Request, Response, NextFunction } from 'express';
+
+export default async (req: Request, res: Response, next: NextFunction) => {
   if (req.userRole !== 'ADMIN') {
     return res.status(403).json({
       status: 'error',
