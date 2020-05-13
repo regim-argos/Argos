@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import Redis, { Redis as IRedis } from 'ioredis';
+import Redis, { Redis as IRedis, RedisOptions } from 'ioredis';
+import configRedisFile from '../config/redis';
 
 const config = {
-  host: process.env.REDIS_HOST,
-  password: process.env.REDIS_PASS,
+  ...configRedisFile,
   keyPrefix: 'cache:',
   retryStrategy(times: number) {
     const delay = Math.min(times * 5000, 200000);
@@ -27,33 +27,12 @@ class Cache {
           },
         ],
         {
-          redisOptions: {
-            password: (process.env.REDIS_PASS as unknown) as string,
-            keyPrefix: 'cache:',
-            retryStrategy(times) {
-              const delay = Math.min(times * 5000, 200000);
-              return delay;
-            },
-            reconnectOnError: () => false,
-          },
+          redisOptions: configRedis as RedisOptions,
         }
       );
     } else {
-      this.redis = new Redis({
-        host: process.env.REDIS_HOST,
-        password: process.env.REDIS_PASS,
-        keyPrefix: 'cache:',
-        retryStrategy(times) {
-          const delay = Math.min(times * 5000, 200000);
-          return delay;
-        },
-        reconnectOnError: () => false,
-      });
+      this.redis = new Redis(configRedis as RedisOptions);
     }
-    this.redis = new Redis({
-      ...(configRedis as Redis.RedisOptions),
-      keyPrefix: 'cache:',
-    });
   }
 
   set(key: string, value: any, expires = process.env.DEFAULT_CACHE_EXPIRATION) {
