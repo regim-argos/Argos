@@ -18,6 +18,38 @@ class Cache {
   protected redis: IRedis;
 
   constructor() {
+    if (process.env.REDIS_CLUSTER) {
+      // @ts-ignore
+      this.redis = new Redis.Cluster(
+        [
+          {
+            host: process.env.REDIS_HOST,
+          },
+        ],
+        {
+          redisOptions: {
+            password: (process.env.REDIS_PASS as unknown) as string,
+            keyPrefix: 'cache:',
+            retryStrategy(times) {
+              const delay = Math.min(times * 5000, 200000);
+              return delay;
+            },
+            reconnectOnError: () => false,
+          },
+        }
+      );
+    } else {
+      this.redis = new Redis({
+        host: process.env.REDIS_HOST,
+        password: process.env.REDIS_PASS,
+        keyPrefix: 'cache:',
+        retryStrategy(times) {
+          const delay = Math.min(times * 5000, 200000);
+          return delay;
+        },
+        reconnectOnError: () => false,
+      });
+    }
     this.redis = new Redis({
       ...(configRedis as Redis.RedisOptions),
       keyPrefix: 'cache:',
