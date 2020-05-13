@@ -58,7 +58,7 @@ class Watcher extends Model {
       watcher.user_id,
       watcher.last_change AS "lastChange",
           JSONB_AGG(
-              JSONB_BUILD_OBJECT('id', u.id, 'platform', u.platform, 'platformData', u.platform_data)
+              JSONB_BUILD_OBJECT('id', u.id, 'platform', u.platform, 'platformData', u.platform_data, 'active', u.active, 'name', u.name)
           ) AS notifications
       FROM watchers watcher
       LEFT JOIN LATERAL JSONB_ARRAY_ELEMENTS(watcher.notifications) AS e(usr) ON TRUE

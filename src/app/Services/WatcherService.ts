@@ -81,10 +81,12 @@ class WatcherServices extends Service<Watcher> {
   async changeStatus(watcher: Watcher) {
     await Promise.all(
       watcher.notifications.map(async (notification) => {
-        await Queue.add(`${notification.platform}_NOTIFICATION`, {
-          watcher,
-          notification,
-        });
+        if (notification.active === true) {
+          await Queue.add(`${notification.platform}_NOTIFICATION`, {
+            watcher,
+            notification,
+          });
+        }
       })
     );
     await app.socketIo.sendNotification(
