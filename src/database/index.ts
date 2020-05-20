@@ -12,7 +12,7 @@ import Notification from '../app/data/models/Notification';
 const models = [User, Hash, File, Watcher, Notification];
 
 class Database {
-  protected connection: Sequelize = new Sequelize(
+  public connection: Sequelize = new Sequelize(
     (databaseConfig as unknown) as Options
   );
 
