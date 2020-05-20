@@ -7,7 +7,8 @@ module.exports = {
     });
   },
 
-  down: (queryInterface) => {
-    return queryInterface.removeColumn('users', 'role');
+  down: async (queryInterface) => {
+    await queryInterface.removeColumn('users', 'role');
+    await queryInterface.sequelize.query('DROP TYPE "enum_users_role"');
   },
 };

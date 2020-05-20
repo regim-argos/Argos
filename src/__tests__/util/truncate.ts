@@ -1,11 +1,13 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import bcrypt from 'bcryptjs';
-import database from '../../src/database';
+import database from '../../database';
 
 export default function truncate(confirmEmail = true) {
+  // @ts-ignore
   return Promise.all([
     ...Object.keys(database.connection.models).map((key) => {
       return database.connection.models[key].destroy({
+        // @ts-ignore
         truncate: { cascade: true },
         force: true,
       });
