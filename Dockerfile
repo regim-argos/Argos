@@ -16,4 +16,4 @@ RUN npm set progress=false && \
 
 RUN apk del native-deps
 
-CMD yarn migrations && yarn start
+CMD yarn migrations && NODE_ENV=production node ./dist/server.js

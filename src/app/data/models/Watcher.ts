@@ -1,5 +1,7 @@
-import Sequelize, { QueryTypes, Model } from 'sequelize';
+import Sequelize, { QueryTypes, Model, Op } from 'sequelize';
+import { set, lastDayOfMonth } from 'date-fns';
 import Notification from './Notification';
+import Event from './Event';
 
 class Watcher extends Model {
   public id!: number;
@@ -44,6 +46,7 @@ class Watcher extends Model {
   // @ts-ignore
   static associate(models) {
     this.belongsTo(models.User, { foreignKey: 'user_id', as: 'user' });
+    this.hasMany(models.Event, { as: 'events', foreignKey: 'watcher_id' });
   }
 
   static async getById(id: number, user_id: number) {
@@ -75,6 +78,56 @@ class Watcher extends Model {
       watcher.notifications =
         watcher.notifications[0]?.id === null ? [] : watcher.notifications;
     return watcher;
+  }
+
+  static async getByIdWithEvent(
+    id: number,
+    user_id: number,
+    month?: number,
+    year?: number
+  ) {
+    let dateFnsMonth: number | undefined;
+    if (month) dateFnsMonth = month - 1;
+    const startDate = set(new Date(), {
+      hours: 0,
+      minutes: 0,
+      seconds: 0,
+      date: 1,
+      month: dateFnsMonth,
+      year,
+    });
+    const finishDate = set(lastDayOfMonth(startDate), {
+      hours: 23,
+      minutes: 59,
+      seconds: 59,
+    });
+    // @ts-ignore
+    const Doc = await this.findOne({
+      where: { id, user_id },
+      include: [
+        {
+          attributes: ['status', 'startedAt', 'endedAt', 'duration'],
+          model: Event,
+          as: 'events',
+          where: {
+            [Op.or]: [
+              {
+                endedAt: {
+                  [Op.between]: [startDate, finishDate],
+                },
+              },
+              {
+                startedAt: {
+                  [Op.between]: [startDate, finishDate],
+                },
+              },
+            ],
+          },
+        },
+      ],
+    });
+
+    return Doc || [];
   }
 
   static async getAllByUserId(user_id: number) {

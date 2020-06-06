@@ -27,6 +27,15 @@ class WatcherServices extends Service<Watcher> {
     return watcher;
   }
 
+  async getByIdWithEvent(
+    id: number,
+    user_id: number,
+    month?: number,
+    year?: number
+  ) {
+    return this.model.getByIdWithEvent(id, user_id, month, year);
+  }
+
   async dbValidatorCreate(validated: Watcher, userId: number) {
     if (validated.notifications?.length)
       await NotificationService.getAllByIds(
