@@ -16,7 +16,7 @@ class WatcherController {
     if (query.month) {
       month = parseInt(query.month as string, 10);
 
-      if (!month && month <= 12 && month >= 1)
+      if (month && month <= 12 && month >= 1)
         return res.status(400).json({ message: 'Invalid Month' });
     }
 
