@@ -6,6 +6,7 @@ import files from './files.routes';
 import watcherRoutes from './watcher.routes';
 import changeStatusRoutes from './changeStatus.routes';
 import notificationRoutes from './notification.routes';
+import watcherDetailRoutes from './watcherDetail.routes';
 
 const routes = Router();
 
@@ -14,6 +15,7 @@ routes.use(userRoutes);
 routes.use(watcherRoutes);
 routes.use(changeStatusRoutes);
 routes.use(notificationRoutes);
+routes.use(watcherDetailRoutes);
 routes.use(files);
 
 export default routes;

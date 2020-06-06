@@ -3,6 +3,7 @@ import axios from 'axios';
 import Logger from '../../lib/Logger';
 import WatcherData from '../data/WatcherData';
 import WatcherModel from '../data/models/Watcher';
+import Event from '../data/models/Event';
 
 interface WatcherMsgData {
   data: WatcherModel;
@@ -54,11 +55,13 @@ class Watcher {
       responseTime = error.requestTime;
     }
     if (watcher.status !== status) {
+      const lastChange = new Date();
       const newWatcher = await WatcherData.updateById(
-        { lastChange: new Date().toISOString(), status },
+        { lastChange: lastChange.toISOString(), status },
         id,
         user_id
       );
+      await Event.createOne(newWatcher.id, status, lastChange);
       await ArgosApi.put(`change_status/${id}`, {
         ...newWatcher,
         oldLastChange: watcher.lastChange,
