@@ -1,9 +1,9 @@
 import request from 'supertest';
-import Watcher from 'app/data/models/Watcher';
 import factory from '../factories';
 
 import app from '../../app';
 import Notification from '../../app/data/models/Notification';
+import Watcher from '../../app/data/models/Watcher';
 
 async function createTokenAndUser() {
   const { body } = await request(app.server)
