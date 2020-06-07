@@ -3,10 +3,14 @@ import ProjectServices from '../Services/ProjectService';
 
 class ProjectController {
   async store(req: Request, res: Response, next: NextFunction) {
-    const { id, name } = await ProjectServices.create(req.body);
+    const { id, name, members } = await ProjectServices.create(
+      req.body,
+      req.userId
+    );
     return res.status(201).json({
       id,
       name,
+      members,
     });
   }
 }

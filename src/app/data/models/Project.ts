@@ -1,4 +1,6 @@
 import Sequelize, { Model } from 'sequelize';
+import User from './User';
+import ProjectMember from './ProjectMember';
 
 class Project extends Model {
   id!: number;
@@ -8,6 +10,8 @@ class Project extends Model {
   defaultDelay!: number;
 
   watcherNumber!: number;
+
+  members!: Partial<ProjectMember>[];
 
   static initModel(sequelize: Sequelize.Sequelize) {
     this.init(
@@ -25,15 +29,37 @@ class Project extends Model {
   }
 
   static associate() {
-    return true;
+    // this.belongsToMany(User, {
+    //   through: models.ProjectMember,
+    //   foreignKey: { field: 'user_id', name: 'userId' },
+    //   as: 'users',
+    // });
+    this.hasMany(ProjectMember, {
+      as: 'members',
+      foreignKey: { field: 'project_id', name: 'projectId' },
+    });
   }
 
   static async createOne(data: Partial<Project>) {
-    const DocProject = await this.create({
-      ...data,
-      active: false,
+    const DocProject = await this.create(data, {
+      include: ['members'],
     });
-    return DocProject;
+    const result = await this.findOne({
+      where: { id: DocProject.id },
+      include: [
+        {
+          model: ProjectMember,
+          as: 'members',
+          include: [
+            {
+              model: User,
+              as: 'user',
+            },
+          ],
+        },
+      ],
+    });
+    return result as Project;
   }
 }
 

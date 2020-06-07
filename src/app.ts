@@ -65,7 +65,6 @@ class App {
         res: Response,
         next: NextFunction
       ) => {
-        console.log(err);
         if (err.name === 'ArgosValidationError') {
           // @ts-ignore
           return res.status(err.status).json(err.body);

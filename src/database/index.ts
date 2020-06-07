@@ -10,8 +10,18 @@ import Watcher from '../app/data/models/Watcher';
 import Notification from '../app/data/models/Notification';
 import Event from '../app/data/models/Event';
 import Project from '../app/data/models/Project';
+import ProjectMember from '../app/data/models/ProjectMember';
 
-const models = [User, Hash, File, Watcher, Notification, Event, Project];
+const models = [
+  User,
+  Hash,
+  File,
+  Watcher,
+  Notification,
+  Event,
+  Project,
+  ProjectMember,
+];
 
 class Database {
   public connection: Sequelize = new Sequelize(

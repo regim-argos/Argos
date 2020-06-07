@@ -93,6 +93,14 @@ class UserServices {
 
     return userSaved;
   }
+
+  async verifyHasOwnProject(userId: number) {
+    const user = await this.model.verifyHasOwnProject(userId);
+    if (user) {
+      return true;
+    }
+    return false;
+  }
 }
 
 interface UserUpdate extends User {
