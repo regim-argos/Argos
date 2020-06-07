@@ -5,7 +5,7 @@ import ProjectValidator from '../Validators/ProjectValidator';
 import Project from '../data/models/Project';
 import UserServices from './UserServices';
 
-class ProjectServices {
+class ProjectService {
   protected model = ProjectData;
 
   async create(data: Partial<Project>, userId: number) {
@@ -26,6 +26,12 @@ class ProjectServices {
 
     return project;
   }
+
+  async verifyIsProjectMember(userId: number, projectId: number) {
+    const project = await this.model.verifyIsProjectMember(userId, projectId);
+    if (!project) throw new BadRequestError("User isn't member this project");
+    return project;
+  }
 }
 
-export default new ProjectServices();
+export default new ProjectService();

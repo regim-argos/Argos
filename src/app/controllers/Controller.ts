@@ -25,9 +25,13 @@ export default class Controller {
   }
 
   async store(req: Request, res: Response, next: NextFunction) {
-    const { userId } = req;
+    const { userId, params } = req;
+    const projectId = parseInt(params.projectId, 10);
 
-    const item = await this.service.create(req.body, userId);
+    if (!projectId)
+      return res.status(400).json({ message: 'Invalid PorjectId' });
+
+    const item = await this.service.create(req.body, userId, projectId);
 
     return res.status(201).json(item);
   }

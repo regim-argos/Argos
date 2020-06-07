@@ -61,6 +61,20 @@ class Project extends Model {
     });
     return result as Project;
   }
+
+  static async verifyIsProjectMember(userId: number, productId: number) {
+    const result = await this.findOne({
+      where: { id: productId },
+      include: [
+        {
+          model: ProjectMember,
+          as: 'members',
+          where: { userId },
+        },
+      ],
+    });
+    return result as Project;
+  }
 }
 
 export default Project;

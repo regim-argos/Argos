@@ -9,8 +9,8 @@ export default abstract class Service<U> {
 
   public validator!: Validator;
 
-  async getAllByUserId(userId: number) {
-    return this.model.getAllByUserId(userId);
+  async getAllByUserId(UserId: number) {
+    return this.model.getAllByUserId(UserId);
   }
 
   async verifyAndGet(id: number, userId: number) {
@@ -19,11 +19,11 @@ export default abstract class Service<U> {
     return item;
   }
 
-  async create(data: object, userId: number) {
+  async create(data: object, userId: number, projectId: number) {
     const validated = await this.validator.createValidator<U>(data);
     await this.dbValidatorCreate(validated, userId);
 
-    const item = await this.model.create(validated, userId);
+    const item = await this.model.create(validated, projectId);
 
     return item;
   }

@@ -6,9 +6,9 @@ import Event from './Event';
 class Watcher extends Model {
   public id!: number;
 
-  public user_id!: number;
+  public project_id!: number;
 
-  public userId!: number;
+  public projectId!: number;
 
   public name!: string;
 
@@ -45,11 +45,11 @@ class Watcher extends Model {
 
   // @ts-ignore
   static associate(models) {
-    this.belongsTo(models.User, { foreignKey: 'user_id', as: 'user' });
+    this.belongsTo(models.Project, { foreignKey: 'project_id', as: 'project' });
     this.hasMany(models.Event, { as: 'events', foreignKey: 'watcher_id' });
   }
 
-  static async getById(id: number, user_id: number) {
+  static async getById(id: number, project_id: number) {
     const [watcher] = (await this.sequelize?.query(
       `SELECT
       watcher.id,
@@ -58,7 +58,7 @@ class Watcher extends Model {
       watcher.status,
       watcher.delay,
       watcher.active,
-      watcher.user_id,
+      watcher.project_id,
       watcher.last_change AS "lastChange",
           JSONB_AGG(
               JSONB_BUILD_OBJECT('id', u.id, 'platform', u.platform, 'platformData', u.platform_data, 'active', u.active, 'name', u.name)
@@ -66,11 +66,13 @@ class Watcher extends Model {
       FROM watchers watcher
       LEFT JOIN LATERAL JSONB_ARRAY_ELEMENTS(watcher.notifications) AS e(usr) ON TRUE
       LEFT JOIN notifications u ON (e.usr->'id')::text::int = u.id
-      WHERE ${user_id ? 'watcher.user_id = $user_id AND' : ''} watcher.id = $id
+      WHERE ${
+        project_id ? 'watcher.project_id = $project_id AND' : ''
+      } watcher.id = $id
       GROUP BY watcher.id
       lIMIT 1`,
       {
-        bind: { id, user_id },
+        bind: { id, project_id },
         type: QueryTypes.SELECT,
       }
     )) as Watcher[];
@@ -82,7 +84,7 @@ class Watcher extends Model {
 
   static async getByIdWithEvent(
     id: number,
-    user_id: number,
+    project_id: number,
     month?: number,
     year?: number
   ) {
@@ -103,7 +105,7 @@ class Watcher extends Model {
     });
     // @ts-ignore
     const Doc = await this.findOne({
-      where: { id, user_id },
+      where: { id, project_id },
       include: [
         {
           attributes: ['status', 'startedAt', 'endedAt', 'duration'],
@@ -130,36 +132,40 @@ class Watcher extends Model {
     return Doc || [];
   }
 
-  static async getAllByUserId(user_id: number) {
+  static async getAllByProjectId(project_id: number) {
     const Doc = await this.findAll({
-      where: { user_id },
+      where: { project_id },
       order: [['createdAt', 'DESC']],
     });
 
     return Doc;
   }
 
-  static async createOne(data: Partial<Watcher>, user_id: number) {
+  static async createOne(data: Partial<Watcher>, project_id: number) {
     const Doc = await this.create({
       ...data,
-      user_id,
+      project_id,
     });
 
     return Doc;
   }
 
-  static async updateById(data: Partial<Watcher>, id: number, user_id: number) {
+  static async updateById(
+    data: Partial<Watcher>,
+    id: number,
+    project_id: number
+  ) {
     const [, [Doc]] = await this.update(data, {
-      where: { user_id, id },
+      where: { project_id, id },
       returning: true,
     });
 
     return Doc;
   }
 
-  static async deleteById(id: number, user_id: number) {
+  static async deleteById(id: number, project_id: number) {
     return this.destroy({
-      where: { user_id, id },
+      where: { project_id, id },
     });
   }
 }

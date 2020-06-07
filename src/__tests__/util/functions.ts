@@ -13,6 +13,12 @@ async function createTokenAndUser() {
     .send({ email: 'admin@argos.com', password: '123456' });
   return { token: body.token, user: body.user as User };
 }
+async function createTokenAndUser2() {
+  const { body } = await request(app.server)
+    .post('/v1/pub/sessions')
+    .send({ email: 'admin@argos2.com', password: '123456' });
+  return { token: body.token, user: body.user as User };
+}
 async function createProject() {
   const { user, token } = await createTokenAndUser();
   const project = (await factory.attrs('Project')) as Project;
@@ -35,15 +41,14 @@ async function createNotifications() {
   return { notification: response.body, token };
 }
 
-async function createWatchers() {
-  const { token } = await createTokenAndUser();
+async function createWatchers(projectId: number, token: string) {
   const watcher = (await factory.attrs('Watcher')) as Watcher;
 
   const response = await request(app.server)
-    .post('/v1/pvt/watchers')
+    .post(`/v1/pvt/${projectId}/watchers`)
     .set('Authorization', `bearer ${token}`)
     .send(watcher);
-  return { watcher: response.body, token };
+  return { watcher: response.body };
 }
 
 export {
@@ -51,4 +56,5 @@ export {
   createProject,
   createNotifications,
   createWatchers,
+  createTokenAndUser2,
 };

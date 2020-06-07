@@ -1,9 +1,9 @@
 import Cache from './cache/Cache';
 
 interface IModel<T> {
-  getAllByUserId(userId: number): Promise<T[]>;
+  getAllByProjectId(projectId: number): Promise<T[]>;
   getById(id: number, userId: number): Promise<T | null>;
-  createOne(data: T, userId: number): Promise<T>;
+  createOne(data: T, projectId: number): Promise<T>;
   updateById(data: Partial<T>, id: number, userId: number): Promise<T>;
   deleteById(id: number, userId: number): Promise<number>;
 }
@@ -12,14 +12,14 @@ class Data<T> {
 
   protected cache?: Cache;
 
-  async getAllByUserId(userId: number) {
-    let value = await this.cache?.getCache(userId, 'all');
+  async getAllByProjectId(projectId: number) {
+    let value = await this.cache?.getCache(projectId, 'all');
 
     if (value) return value;
 
-    value = await this.model.getAllByUserId(userId);
+    value = await this.model.getAllByProjectId(projectId);
 
-    await this.cache?.setCache(userId, 'all', value);
+    await this.cache?.setCache(projectId, 'all', value);
 
     return value;
   }
@@ -36,9 +36,9 @@ class Data<T> {
     return value;
   }
 
-  async create(data: T, userId: number) {
-    const value = await this.model.createOne(data, userId);
-    await this.cache?.invalidateCreate(userId);
+  async create(data: T, projectId: number) {
+    const value = await this.model.createOne(data, projectId);
+    await this.cache?.invalidateCreate(projectId);
     return value;
   }
 
