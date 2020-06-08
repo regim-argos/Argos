@@ -8,6 +8,11 @@ import UserServices from './UserServices';
 class ProjectService {
   protected model = ProjectData;
 
+  async getUserProjects(userId: number) {
+    const project = await this.model.getUserProjects(userId);
+    return project;
+  }
+
   async create(data: Partial<Project>, userId: number) {
     const ValidatedProject = await ProjectValidator.createValidator<Project>(
       data

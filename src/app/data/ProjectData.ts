@@ -10,6 +10,11 @@ class ProjectData {
   async verifyIsProjectMember(userId: number, projectId: number) {
     return this.model.verifyIsProjectMember(userId, projectId);
   }
+
+  async getUserProjects(userId: number) {
+    const project = await this.model.getUserProjects(userId);
+    return project;
+  }
 }
 
 export default new ProjectData();

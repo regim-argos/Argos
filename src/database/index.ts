@@ -1,8 +1,7 @@
 import { Sequelize, Options } from 'sequelize';
 
-import User from '../app/data/models/User';
-
 // @ts-ignore
+import User from '@app/data/models/User';
 import databaseConfig from '../config/database';
 import Hash from '../app/data/models/Hash';
 import File from '../app/data/models/File';

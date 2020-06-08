@@ -54,6 +54,7 @@ class Project extends Model {
             {
               model: User,
               as: 'user',
+              attributes: ['name', 'email'],
             },
           ],
         },
@@ -74,6 +75,20 @@ class Project extends Model {
       ],
     });
     return result as Project;
+  }
+
+  static async getUserProjects(userId: number) {
+    const result = await this.findAll({
+      include: [
+        {
+          model: ProjectMember,
+          as: 'members',
+          where: { userId },
+        },
+      ],
+    });
+
+    return result;
   }
 }
 
