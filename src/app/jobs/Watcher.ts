@@ -40,8 +40,8 @@ class Watcher {
   }
 
   async handle({ data }: WatcherMsgData) {
-    const { id, user_id } = data;
-    const watcher = await WatcherData.getById(id, user_id);
+    const { id, project_id } = data;
+    const watcher = await WatcherData.getById(id, project_id);
 
     let status;
     let responseTime;
@@ -59,7 +59,7 @@ class Watcher {
       const newWatcher = await WatcherData.updateById(
         { lastChange: lastChange.toISOString(), status },
         id,
-        user_id
+        project_id
       );
       await Event.createOne(newWatcher.id, status, lastChange);
       await ArgosApi.put(`change_status/${id}`, {

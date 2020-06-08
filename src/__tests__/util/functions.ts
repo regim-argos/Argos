@@ -48,7 +48,7 @@ async function createWatchers(projectId: number, token: string) {
     .post(`/v1/pvt/${projectId}/watchers`)
     .set('Authorization', `bearer ${token}`)
     .send(watcher);
-  return { watcher: response.body };
+  return { watcher: response.body as Watcher };
 }
 
 export {

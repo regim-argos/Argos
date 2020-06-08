@@ -62,9 +62,9 @@ class Project extends Model {
     return result as Project;
   }
 
-  static async verifyIsProjectMember(userId: number, productId: number) {
+  static async verifyIsProjectMember(userId: number, projectId: number) {
     const result = await this.findOne({
-      where: { id: productId },
+      where: { id: projectId },
       include: [
         {
           model: ProjectMember,

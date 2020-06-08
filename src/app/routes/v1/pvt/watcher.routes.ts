@@ -16,7 +16,7 @@ routes.post('/:projectId/watchers/', (req, res, next) =>
 routes.put('/:projectId/watchers/:id', (req, res, next) =>
   WatcherController.update(req, res, next)
 );
-routes.delete('/:id', (req, res, next) =>
+routes.delete('/:projectId/watchers/:id', (req, res, next) =>
   WatcherController.delete(req, res, next)
 );
 

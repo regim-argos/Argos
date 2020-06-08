@@ -3,7 +3,6 @@ import BadRequestError from '../Error/BadRequestError';
 import Hash from '../data/models/Hash';
 // import HashValidator from '../Validators/MealValidator';
 // import { notFound } from '../Error/TypeErrors';
-// import ProductService from './ProductService';
 
 class HashServices {
   protected model = Hash;

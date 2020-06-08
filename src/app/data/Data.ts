@@ -2,10 +2,10 @@ import Cache from './cache/Cache';
 
 interface IModel<T> {
   getAllByProjectId(projectId: number): Promise<T[]>;
-  getById(id: number, userId: number): Promise<T | null>;
+  getById(id: number, projectId: number): Promise<T | null>;
   createOne(data: T, projectId: number): Promise<T>;
-  updateById(data: Partial<T>, id: number, userId: number): Promise<T>;
-  deleteById(id: number, userId: number): Promise<number>;
+  updateById(data: Partial<T>, id: number, projectId: number): Promise<T>;
+  deleteById(id: number, projectId: number): Promise<number>;
 }
 class Data<T> {
   protected model!: IModel<T>;
@@ -24,14 +24,14 @@ class Data<T> {
     return value;
   }
 
-  async getById(id: number, userId: number) {
-    let value = await this.cache?.getCache(userId, id);
+  async getById(id: number, projectId: number) {
+    let value = await this.cache?.getCache(projectId, id);
 
     if (value) return value;
 
-    value = await this.model.getById(id, userId);
+    value = await this.model.getById(id, projectId);
 
-    await this.cache?.setCache(userId, id, value);
+    await this.cache?.setCache(projectId, id, value);
 
     return value;
   }
@@ -42,15 +42,15 @@ class Data<T> {
     return value;
   }
 
-  async updateById(data: Partial<T>, id: number, userId: number) {
-    const value = await this.model.updateById(data, id, userId);
-    await this.cache?.invalidateUpdate(userId, id);
+  async updateById(data: Partial<T>, id: number, projectId: number) {
+    const value = await this.model.updateById(data, id, projectId);
+    await this.cache?.invalidateUpdate(projectId, id);
     return value;
   }
 
-  async deleteById(id: number, userId: number) {
-    const value = await this.model.deleteById(id, userId);
-    await this.cache?.invalidateUpdate(userId, id);
+  async deleteById(id: number, projectId: number) {
+    const value = await this.model.deleteById(id, projectId);
+    await this.cache?.invalidateUpdate(projectId, id);
     return value;
   }
 }

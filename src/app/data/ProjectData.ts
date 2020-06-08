@@ -7,8 +7,8 @@ class ProjectData {
     return this.model.createOne(data);
   }
 
-  async verifyIsProjectMember(userId: number, productId: number) {
-    return this.model.verifyIsProjectMember(userId, productId);
+  async verifyIsProjectMember(userId: number, projectId: number) {
+    return this.model.verifyIsProjectMember(userId, projectId);
   }
 }
 

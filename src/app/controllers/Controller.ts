@@ -1,14 +1,18 @@
 import { Request, Response, NextFunction } from 'express';
-import Service from '../Services/Service';
+import Service from '../Services/IService';
 
 export default class Controller {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   protected service!: Service<any>;
 
   async index(req: Request, res: Response, next: NextFunction) {
-    const { userId } = req;
+    const { userId, params } = req;
 
-    const items = await this.service.getAllByUserId(userId);
+    const projectId = parseInt(params.projectId, 10);
+
+    if (!projectId)
+      return res.status(400).json({ message: 'Invalid PorjectId' });
+
+    const items = await this.service.getAllByProjectId(userId, projectId);
     return res.status(200).json(items);
   }
 
@@ -19,7 +23,12 @@ export default class Controller {
 
     if (!id) return res.status(400).json({ message: 'Invalid ID' });
 
-    const item = await this.service.verifyAndGet(id, userId);
+    const projectId = parseInt(params.projectId, 10);
+
+    if (!projectId)
+      return res.status(400).json({ message: 'Invalid PorjectId' });
+
+    const item = await this.service.verifyAndGet(id, userId, projectId);
 
     return res.status(200).json(item);
   }
@@ -43,7 +52,12 @@ export default class Controller {
 
     if (!id) return res.status(400).json({ message: 'Invalid ID' });
 
-    const item = await this.service.update(req.body, id, userId);
+    const projectId = parseInt(params.projectId, 10);
+
+    if (!projectId)
+      return res.status(400).json({ message: 'Invalid PorjectId' });
+
+    const item = await this.service.update(req.body, id, userId, projectId);
 
     return res.status(200).json(item);
   }
@@ -55,7 +69,12 @@ export default class Controller {
 
     if (!id) return res.status(400).json({ message: 'Invalid ID' });
 
-    await this.service.delete(id, userId);
+    const projectId = parseInt(params.projectId, 10);
+
+    if (!projectId)
+      return res.status(400).json({ message: 'Invalid PorjectId' });
+
+    await this.service.delete(id, userId, projectId);
 
     return res.status(204).json();
   }

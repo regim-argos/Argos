@@ -3,9 +3,9 @@ import Sequelize, { Model } from 'sequelize';
 class Notification extends Model {
   public id!: number;
 
-  public user_id!: number;
+  public project_id!: number;
 
-  public userId!: number;
+  public projectId!: number;
 
   public platform!: string;
 
@@ -35,53 +35,53 @@ class Notification extends Model {
 
   // @ts-ignore
   static associate(models) {
-    this.belongsTo(models.User, { foreignKey: 'user_id', as: 'user' });
+    this.belongsTo(models.Project, { foreignKey: 'project_id', as: 'project' });
   }
 
-  static async getAllByUserId(user_id: number) {
+  static async getAllByProjectId(project_id: number) {
     const Doc = await this.findAll({
-      where: { user_id },
+      where: { project_id },
       order: [['createdAt', 'DESC']],
     });
 
     return Doc;
   }
 
-  static async getById(id: number, user_id: number) {
+  static async getById(id: number, project_id: number) {
     const Doc = await this.findOne({
-      where: { id, user_id },
+      where: { id, project_id },
     });
 
     return Doc;
   }
 
-  static async createOne(data: Notification, user_id: number) {
+  static async createOne(data: Notification, project_id: number) {
     const Doc = await this.create({
       ...data,
-      user_id,
+      project_id,
     });
 
     return Doc;
   }
 
-  static async updateById(data: Notification, id: number, user_id: number) {
+  static async updateById(data: Notification, id: number, project_id: number) {
     const [, [Doc]] = await this.update(data, {
-      where: { user_id, id },
+      where: { project_id, id },
       returning: true,
     });
 
     return Doc;
   }
 
-  static async deleteById(id: number, user_id: number) {
+  static async deleteById(id: number, project_id: number) {
     return this.destroy({
-      where: { user_id, id },
+      where: { project_id, id },
     });
   }
 
-  static async getAllByIds(ids: number[], user_id: number) {
+  static async getAllByIds(ids: number[], project_id: number) {
     return this.findAll({
-      where: { id: ids, user_id },
+      where: { id: ids, project_id },
       order: [['createdAt', 'DESC']],
     });
   }

@@ -1,23 +1,38 @@
 /* eslint-disable import/no-cycle */
+import NotFoundError from '@app/Error/NotFoundError';
 import WatcherValidator from '../Validators/WatcherValidator';
 import Queue from '../../lib/Queue';
-import UserServices from './UserServices';
 import BadRequestError from '../Error/BadRequestError';
 import NotificationService from './NotificationService';
 import WatcherData from '../data/WatcherData';
 import Watcher from '../data/models/Watcher';
 import ProjectService from './ProjectService';
+import IService from './IService';
 
-class WatcherService {
+class WatcherService extends IService<Watcher> {
   public name = 'Watcher';
 
   protected model = WatcherData;
 
   public validator = WatcherValidator;
 
-  // async getAllByProjectId(ProjectId: number) {
-  //   return this.model.getAllByProjectId(ProjectId);
-  // }
+  async getAllByProjectId(userId: number, projectId: number) {
+    await ProjectService.verifyIsProjectMember(userId, projectId);
+    return this.model.getAllByProjectId(projectId);
+  }
+
+  async verifyAndGet(id: number, userId: number, projectId: number) {
+    await ProjectService.verifyIsProjectMember(userId, projectId);
+    const item = await this.model.getById(id, projectId);
+    if (!item) throw new NotFoundError(this.name);
+    return item;
+  }
+
+  protected async verifyAndGetWithAuth(id: number, projectId: number) {
+    const item = await this.model.getById(id, projectId);
+    if (!item) throw new NotFoundError(this.name);
+    return item;
+  }
 
   async create(data: object, userId: number, projectId: number) {
     const validated = await this.validator.createValidator<Watcher>(data);
@@ -29,7 +44,7 @@ class WatcherService {
     if (validated.notifications?.length)
       await NotificationService.getAllByIds(
         validated.notifications.map((item) => item.id),
-        userId
+        projectId
       );
     if (validated.delay < project.defaultDelay)
       throw new BadRequestError(
@@ -51,6 +66,45 @@ class WatcherService {
     return watcher;
   }
 
+  async update(data: object, id: number, userId: number, projectId: number) {
+    const validated = await this.validator.updateValidator<Watcher>(data);
+    const project = await ProjectService.verifyIsProjectMember(
+      userId,
+      projectId
+    );
+    if (validated.notifications?.length)
+      await NotificationService.getAllByIds(
+        validated.notifications.map((item) => item.id),
+        projectId
+      );
+    if (validated.delay < project.defaultDelay)
+      throw new BadRequestError(
+        `Watcher time can't be less than ${project.defaultDelay} seconds`
+      );
+    const old = await this.verifyAndGetWithAuth(id, projectId);
+
+    const newValue = await this.model.updateById(validated, id, projectId);
+
+    await Queue.remove('Watcher', old.delay * 1000, old.id);
+    if (newValue.active)
+      await Queue.addRepeatJob('Watcher', newValue, {
+        every: newValue.delay * 1000,
+      });
+
+    return newValue;
+  }
+
+  async delete(id: number, userId: number, projectId: number) {
+    await ProjectService.verifyIsProjectMember(userId, projectId);
+    const watcher = await this.verifyAndGetWithAuth(id, projectId);
+    await this.model.deleteById(id, projectId);
+
+    await Queue.remove('Watcher', watcher.delay * 1000, watcher.id);
+
+    return watcher;
+  }
+
+  // TODO remove user
   async getByIdWithEvent(
     id: number,
     user_id: number,
@@ -59,39 +113,6 @@ class WatcherService {
   ) {
     return this.model.getByIdWithEvent(id, user_id, month, year);
   }
-
-  async dbValidatorUpdate(validated: Watcher, userId: number) {
-    if (validated.notifications?.length)
-      await NotificationService.getAllByIds(
-        validated.notifications.map((item) => item.id),
-        userId
-      );
-    const user = await UserServices.verifyAndGetUserById(userId);
-    if (validated.delay < user.defaultDelay)
-      throw new BadRequestError(
-        `Watcher time can't be less than ${user.defaultDelay} seconds`
-      );
-  }
-
-  // async update(data: object, id: number, userId: number) {
-  //   const { old, newValue } = await super.updateWithReturn(data, id, userId);
-
-  //   await Queue.remove('Watcher', old.delay * 1000, old.id);
-  //   if (newValue.active)
-  //     await Queue.addRepeatJob('Watcher', newValue, {
-  //       every: newValue.delay * 1000,
-  //     });
-
-  //   return newValue;
-  // }
-
-  // async delete(id: number, userId: number) {
-  //   const watcher = await super.delete(id, userId);
-
-  //   await Queue.remove('Watcher', watcher.delay * 1000, watcher.id);
-
-  //   return watcher;
-  // }
 
   async changeStatus(watcher: Watcher) {
     await Promise.all(
