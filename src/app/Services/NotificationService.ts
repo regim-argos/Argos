@@ -13,11 +13,19 @@ class NotificationService extends IService<Notification> {
 
   public validator = NotificationValidator;
 
-  async getAllByProjectId(ProjectId: number) {
-    return this.model.getAllByProjectId(ProjectId);
+  async getAllByProjectId(userId: number, projectId: number) {
+    await ProjectService.verifyIsProjectMember(userId, projectId);
+    return this.model.getAllByProjectId(projectId);
   }
 
-  async verifyAndGet(id: number, projectId: number) {
+  async verifyAndGet(id: number, userId: number, projectId: number) {
+    await ProjectService.verifyIsProjectMember(userId, projectId);
+    const item = await this.model.getById(id, projectId);
+    if (!item) throw new NotFoundError(this.name);
+    return item;
+  }
+
+  protected async verifyAndGetWithAuth(id: number, projectId: number) {
     const item = await this.model.getById(id, projectId);
     if (!item) throw new NotFoundError(this.name);
     return item;
@@ -36,7 +44,7 @@ class NotificationService extends IService<Notification> {
     const validated = await this.validator.updateValidator<Notification>(data);
     await ProjectService.verifyIsProjectMember(userId, projectId);
 
-    await this.verifyAndGet(id, projectId);
+    await this.verifyAndGetWithAuth(id, projectId);
 
     const newValue = await this.model.updateById(validated, id, projectId);
 
@@ -45,7 +53,7 @@ class NotificationService extends IService<Notification> {
 
   async delete(id: number, userId: number, projectId: number) {
     await ProjectService.verifyIsProjectMember(userId, projectId);
-    const notification = await this.verifyAndGet(id, projectId);
+    const notification = await this.verifyAndGetWithAuth(id, projectId);
     await this.model.deleteById(id, projectId);
 
     return notification;

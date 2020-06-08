@@ -30,15 +30,15 @@ async function createProject() {
   return { project: response.body, token, user };
 }
 
-async function createNotifications() {
-  const { token } = await createTokenAndUser();
+async function createNotifications(projectId: number, token: string) {
   const notification = (await factory.attrs('Notification')) as Notification;
 
   const response = await request(app.server)
-    .post('/v1/pvt/notifications')
+    .post(`/v1/pvt/${projectId}/notifications`)
     .set('Authorization', `bearer ${token}`)
     .send(notification);
-  return { notification: response.body, token };
+
+  return { notification: response.body as Notification, token };
 }
 
 async function createWatchers(projectId: number, token: string) {
