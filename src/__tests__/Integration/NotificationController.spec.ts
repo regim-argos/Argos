@@ -1,13 +1,3 @@
-// // eslint-disable-next-line import/no-extraneous-dependencies
-// import request from 'supertest';
-// import truncate from '../../__tests__/util/truncate';
-// import factory from '../../__tests__/factories';
-// import app from '../../app';
-// import {
-//   createTokenAndUser,
-//   createNotifications,
-// } from '../../__tests__/util/functions';
-// import Notification from '../data/models/Notification';
 import request from 'supertest';
 import truncate from '@tests/util/truncate';
 import factory from '@tests/factories';
