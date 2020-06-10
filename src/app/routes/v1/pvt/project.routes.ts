@@ -10,5 +10,6 @@ routes.get('/projects', ProjectController.index);
 routes.post('/projects', ProjectController.store);
 
 routes.post('/:projectId/projectMember', ProjectMemberController.store);
+routes.delete('/:projectId/projectMember', ProjectMemberController.delete);
 
 export default routes;

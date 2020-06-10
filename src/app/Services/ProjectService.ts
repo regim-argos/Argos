@@ -1,3 +1,5 @@
+import Queue from '@lib/Queue';
+import NewMemberEmail from '@app/jobs/NewMemberEmail';
 import BadRequestError from '../Error/BadRequestError';
 import { MemberRole } from '../data/models/ProjectMember';
 import ProjectData from '../data/ProjectData';
@@ -62,7 +64,7 @@ class ProjectService {
     }>(data);
     const { email } = ValidatedProject;
 
-    await this.verifyIsOwnerMember(userId, projectId);
+    const projectOwner = await this.verifyIsOwnerMember(userId, projectId);
 
     await this.verifyIsProjectMemberByEmail(ValidatedProject.email, projectId);
 
@@ -71,6 +73,41 @@ class ProjectService {
     );
 
     const project = await this.model.addMember(userToAdd?.id, email, projectId);
+
+    if (!userToAdd?.id) {
+      await Queue.add(NewMemberEmail.key, {
+        name: projectOwner.members[0].user?.name,
+        email,
+        projectName: project.name,
+      });
+    }
+
+    return projectOwner;
+  }
+
+  async removeMember(
+    data: { email: string },
+    userId: number,
+    projectId: number
+  ) {
+    const ValidatedProject = await ProjectValidator.addMember<{
+      email: string;
+    }>(data);
+    const { email } = ValidatedProject;
+
+    await this.verifyIsOwnerMember(userId, projectId);
+
+    const projectOwner = await this.model.verifyIsProjectMemberByEmail(
+      email,
+      projectId
+    );
+
+    if (!projectOwner) throw new BadRequestError("User isn't project member");
+
+    if (projectOwner.members[0].userId === userId)
+      throw new BadRequestError("You can't remove youself");
+
+    const project = await this.model.removeMember(email, projectId);
 
     return project;
   }

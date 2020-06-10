@@ -88,6 +88,29 @@ class Project extends Model {
     return result as Project;
   }
 
+  static async removeMember(email: string, projectId: number) {
+    await ProjectMember.destroy({
+      where: { email, projectId },
+    });
+    const result = await this.findOne({
+      where: { id: projectId },
+      include: [
+        {
+          model: ProjectMember,
+          as: 'members',
+          include: [
+            {
+              model: User,
+              as: 'user',
+              attributes: ['name', 'email'],
+            },
+          ],
+        },
+      ],
+    });
+    return result as Project;
+  }
+
   static async verifyIsProjectMember(userId: number, projectId: number) {
     const result = await this.findOne({
       where: { id: projectId },
@@ -95,6 +118,13 @@ class Project extends Model {
         {
           model: ProjectMember,
           as: 'members',
+          include: [
+            {
+              model: User,
+              as: 'user',
+              attributes: ['name', 'email'],
+            },
+          ],
           where: { userId },
         },
       ],

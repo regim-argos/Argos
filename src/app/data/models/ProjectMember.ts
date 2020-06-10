@@ -1,4 +1,5 @@
 import Sequelize, { Model } from 'sequelize';
+import User from './User';
 
 export enum MemberRole {
   USER = 'USER',
@@ -13,6 +14,8 @@ class ProjectMember extends Model {
   email!: string;
 
   userId!: number;
+
+  user!: User;
 
   static initModel(sequelize: Sequelize.Sequelize) {
     this.init(

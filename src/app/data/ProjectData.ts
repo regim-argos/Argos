@@ -27,6 +27,10 @@ class ProjectData {
   ) {
     return this.model.addMember(userId, email, projectId);
   }
+
+  async removeMember(email: string, projectId: number) {
+    return this.model.removeMember(email, projectId);
+  }
 }
 
 export default new ProjectData();
