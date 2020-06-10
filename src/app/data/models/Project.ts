@@ -40,6 +40,25 @@ class Project extends Model {
     });
   }
 
+  static async getById(projectId: number) {
+    return this.findOne({
+      where: { id: projectId },
+      include: [
+        {
+          model: ProjectMember,
+          as: 'members',
+          include: [
+            {
+              model: User,
+              as: 'user',
+              attributes: ['name', 'email'],
+            },
+          ],
+        },
+      ],
+    });
+  }
+
   static async createOne(data: Partial<Project>) {
     const DocProject = await this.create(data, {
       include: ['members'],
@@ -61,6 +80,10 @@ class Project extends Model {
       ],
     });
     return result as Project;
+  }
+
+  static async setNewUserInProjectByEmail(userId: number, email: string) {
+    return ProjectMember.update({ userId }, { where: { email } });
   }
 
   static async addMember(

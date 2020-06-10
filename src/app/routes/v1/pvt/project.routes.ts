@@ -7,6 +7,8 @@ const routes = Router();
 
 routes.get('/projects', ProjectController.index);
 
+routes.get('/projects/:id', ProjectController.show);
+
 routes.post('/projects', ProjectController.store);
 
 routes.post('/:projectId/projectMember', ProjectMemberController.store);

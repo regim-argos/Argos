@@ -31,6 +31,14 @@ class ProjectData {
   async removeMember(email: string, projectId: number) {
     return this.model.removeMember(email, projectId);
   }
+
+  async setNewUserInProjectByEmail(userId: number, email: string) {
+    return this.model.setNewUserInProjectByEmail(userId, email);
+  }
+
+  async getById(projectId: number) {
+    return this.model.getById(projectId);
+  }
 }
 
 export default new ProjectData();

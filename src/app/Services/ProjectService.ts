@@ -15,6 +15,11 @@ class ProjectService {
     return project;
   }
 
+  async verifyAndGet(userId: number, projectId: number) {
+    await this.verifyIsOwnerMember(userId, projectId);
+    return this.model.getById(projectId);
+  }
+
   // TODO user email
   async create(data: Partial<Project>, userId: number) {
     const ValidatedProject = await ProjectValidator.createValidator<Project>(
@@ -82,7 +87,7 @@ class ProjectService {
       });
     }
 
-    return projectOwner;
+    return project;
   }
 
   async removeMember(
@@ -110,6 +115,10 @@ class ProjectService {
     const project = await this.model.removeMember(email, projectId);
 
     return project;
+  }
+
+  async setNewUserInProjectByEmail(userId: number, email: string) {
+    return this.model.setNewUserInProjectByEmail(userId, email);
   }
 }
 

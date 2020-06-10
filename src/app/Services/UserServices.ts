@@ -8,6 +8,7 @@ import NotFoundError from '../Error/NotFoundError';
 import BadRequestError from '../Error/BadRequestError';
 import FileService from './FileService';
 import User from '../data/models/User';
+import ProjectService from './ProjectService';
 
 class UserServices {
   protected model = UserData;
@@ -75,6 +76,8 @@ class UserServices {
     const user = await this.model.createOne(ValidatedUser);
 
     await this.createConfirmEmailHash(user.email, user);
+
+    await ProjectService.setNewUserInProjectByEmail(user.id, user.email);
 
     return user;
   }
