@@ -20,4 +20,4 @@ routes.delete('/:projectId/notifications/:id', (req, res, next) =>
   NotificationController.delete(req, res, next)
 );
 
-export default Router().use(routes);
+export default routes;

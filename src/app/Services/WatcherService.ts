@@ -1,5 +1,6 @@
 /* eslint-disable import/no-cycle */
 import NotFoundError from '@app/Error/NotFoundError';
+import { verifyIsProjectMember } from '@app/utils/ProjectDecorators';
 import WatcherValidator from '../Validators/WatcherValidator';
 import Queue from '../../lib/Queue';
 import BadRequestError from '../Error/BadRequestError';
@@ -16,13 +17,13 @@ class WatcherService extends IService<Watcher> {
 
   public validator = WatcherValidator;
 
+  @verifyIsProjectMember(0, 1)
   async getAllByProjectId(userId: number, projectId: number) {
-    await ProjectService.verifyIsProjectMember(userId, projectId);
     return this.model.getAllByProjectId(projectId);
   }
 
+  @verifyIsProjectMember(1, 2)
   async verifyAndGet(id: number, userId: number, projectId: number) {
-    await ProjectService.verifyIsProjectMember(userId, projectId);
     const item = await this.model.getById(id, projectId);
     if (!item) throw new NotFoundError(this.name);
     return item;
@@ -94,8 +95,8 @@ class WatcherService extends IService<Watcher> {
     return newValue;
   }
 
+  @verifyIsProjectMember(1, 2)
   async delete(id: number, userId: number, projectId: number) {
-    await ProjectService.verifyIsProjectMember(userId, projectId);
     const watcher = await this.verifyAndGetWithAuth(id, projectId);
     await this.model.deleteById(id, projectId);
 

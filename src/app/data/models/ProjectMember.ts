@@ -10,6 +10,8 @@ class ProjectMember extends Model {
 
   role!: MemberRole;
 
+  email!: string;
+
   userId!: number;
 
   static initModel(sequelize: Sequelize.Sequelize) {
@@ -17,6 +19,7 @@ class ProjectMember extends Model {
       {
         role: Sequelize.ENUM('OWNER', 'USER'),
         userId: Sequelize.INTEGER,
+        email: Sequelize.STRING,
         projectId: Sequelize.INTEGER,
       },
       {

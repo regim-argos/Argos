@@ -1,10 +1,10 @@
 import NotFoundError from '@app/Error/NotFoundError';
+import { verifyIsProjectMember } from '@app/utils/ProjectDecorators';
 import IService from './IService';
 import NotificationValidator from '../Validators/NotificationValidator';
 import BadRequestError from '../Error/BadRequestError';
 import NotificationData from '../data/NotificationData';
 import Notification from '../data/models/Notification';
-import ProjectService from './ProjectService';
 
 class NotificationService extends IService<Notification> {
   public name = 'Notification';
@@ -13,13 +13,13 @@ class NotificationService extends IService<Notification> {
 
   public validator = NotificationValidator;
 
+  @verifyIsProjectMember(0, 1)
   async getAllByProjectId(userId: number, projectId: number) {
-    await ProjectService.verifyIsProjectMember(userId, projectId);
     return this.model.getAllByProjectId(projectId);
   }
 
+  @verifyIsProjectMember(1, 2)
   async verifyAndGet(id: number, userId: number, projectId: number) {
-    await ProjectService.verifyIsProjectMember(userId, projectId);
     const item = await this.model.getById(id, projectId);
     if (!item) throw new NotFoundError(this.name);
     return item;
@@ -31,18 +31,18 @@ class NotificationService extends IService<Notification> {
     return item;
   }
 
+  @verifyIsProjectMember(1, 2)
   async create(data: object, userId: number, projectId: number) {
     const validated = await this.validator.createValidator<Notification>(data);
-    await ProjectService.verifyIsProjectMember(userId, projectId);
 
     const notification = await this.model.create(validated, projectId);
 
     return notification;
   }
 
+  @verifyIsProjectMember(2, 3)
   async update(data: object, id: number, userId: number, projectId: number) {
     const validated = await this.validator.updateValidator<Notification>(data);
-    await ProjectService.verifyIsProjectMember(userId, projectId);
 
     await this.verifyAndGetWithAuth(id, projectId);
 
@@ -51,8 +51,8 @@ class NotificationService extends IService<Notification> {
     return newValue;
   }
 
+  @verifyIsProjectMember(1, 2)
   async delete(id: number, userId: number, projectId: number) {
-    await ProjectService.verifyIsProjectMember(userId, projectId);
     const notification = await this.verifyAndGetWithAuth(id, projectId);
     await this.model.deleteById(id, projectId);
 

@@ -63,6 +63,31 @@ class Project extends Model {
     return result as Project;
   }
 
+  static async addMember(
+    userId: number | undefined,
+    email: string,
+    projectId: number
+  ) {
+    await ProjectMember.create({ userId, email, projectId });
+    const result = await this.findOne({
+      where: { id: projectId },
+      include: [
+        {
+          model: ProjectMember,
+          as: 'members',
+          include: [
+            {
+              model: User,
+              as: 'user',
+              attributes: ['name', 'email'],
+            },
+          ],
+        },
+      ],
+    });
+    return result as Project;
+  }
+
   static async verifyIsProjectMember(userId: number, projectId: number) {
     const result = await this.findOne({
       where: { id: projectId },
@@ -71,6 +96,20 @@ class Project extends Model {
           model: ProjectMember,
           as: 'members',
           where: { userId },
+        },
+      ],
+    });
+    return result as Project;
+  }
+
+  static async verifyIsProjectMemberByEmail(email: string, projectId: number) {
+    const result = await this.findOne({
+      where: { id: projectId },
+      include: [
+        {
+          model: ProjectMember,
+          as: 'members',
+          where: { email },
         },
       ],
     });

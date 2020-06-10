@@ -20,4 +20,4 @@ routes.delete('/:projectId/watchers/:id', (req, res, next) =>
   WatcherController.delete(req, res, next)
 );
 
-export default Router().use(routes);
+export default routes;
