@@ -15,6 +15,8 @@ class ProjectMember extends Model {
 
   userId!: number;
 
+  projectId!: number;
+
   user!: User;
 
   static initModel(sequelize: Sequelize.Sequelize) {

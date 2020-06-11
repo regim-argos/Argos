@@ -30,13 +30,13 @@ async function createProject() {
   return { project: response.body as Project, token, user };
 }
 
-async function createProjectWith2Members() {
+async function createProjectWith2Members(email = 'admin@argos2.com') {
   const { token, project, user } = await createProject();
 
   await request(app.server)
     .post(`/v1/pvt/${project.id}/projectMember`)
     .set('Authorization', `bearer ${token}`)
-    .send({ email: 'admin@argos2.com' });
+    .send({ email });
 
   return { token, project, user };
 }

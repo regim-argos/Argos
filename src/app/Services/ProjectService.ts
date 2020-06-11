@@ -114,7 +114,11 @@ class ProjectService {
     if (projectOwner.members[0].userId === userId)
       throw new BadRequestError("You can't remove yourself");
 
-    const project = await this.model.removeMember(email, projectId);
+    const project = await this.model.removeMember(
+      email,
+      projectId,
+      projectOwner.members[0].userId
+    );
 
     return project;
   }

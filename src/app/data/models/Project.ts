@@ -83,7 +83,10 @@ class Project extends Model {
   }
 
   static async setNewUserInProjectByEmail(userId: number, email: string) {
-    return ProjectMember.update({ userId }, { where: { email } });
+    return ProjectMember.update(
+      { userId },
+      { where: { email }, returning: true }
+    );
   }
 
   static async addMember(
