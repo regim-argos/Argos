@@ -28,13 +28,15 @@ class ProjectService {
 
     const HasOwnProject = await UserServices.verifyHasOwnProject(userId);
 
+    const { email } = await UserServices.verifyAndGetUserById(userId);
+
     if (HasOwnProject) {
       throw new BadRequestError('A user can create only one project');
     }
 
     const project = await this.model.createOne({
       ...ValidatedProject,
-      members: [{ userId, role: MemberRole.OWNER }],
+      members: [{ userId, role: MemberRole.OWNER, email }],
     });
 
     return project;
@@ -42,7 +44,7 @@ class ProjectService {
 
   async verifyIsProjectMember(userId: number, projectId: number) {
     const project = await this.model.verifyIsProjectMember(userId, projectId);
-    if (!project) throw new BadRequestError("User isn't member this project");
+    if (!project) throw new BadRequestError("User isn't  a project member");
     return project;
   }
 
@@ -51,15 +53,15 @@ class ProjectService {
       email,
       projectId
     );
-    if (isMember) throw new BadRequestError('User already project member');
+    if (isMember) throw new BadRequestError('User is already a project member');
     return isMember;
   }
 
   async verifyIsOwnerMember(userId: number, projectId: number) {
     const project = await this.model.verifyIsProjectMember(userId, projectId);
-    if (!project) throw new BadRequestError("User isn't a member this project");
+    if (!project) throw new BadRequestError("User isn't project member");
     if (project.members[0].role !== 'OWNER')
-      throw new BadRequestError("User isn't a owner this project");
+      throw new BadRequestError("user isn't project owner");
     return project;
   }
 
@@ -110,7 +112,7 @@ class ProjectService {
     if (!projectOwner) throw new BadRequestError("User isn't project member");
 
     if (projectOwner.members[0].userId === userId)
-      throw new BadRequestError("You can't remove youself");
+      throw new BadRequestError("You can't remove yourself");
 
     const project = await this.model.removeMember(email, projectId);
 

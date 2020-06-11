@@ -6,6 +6,19 @@ import app from '../../app';
 import { createTokenAndUser, createProject } from '../util/functions';
 import Project from '../../app/data/models/Project';
 
+jest.mock('../../lib/Queue', () => ({
+  add: jest.fn().mockResolvedValue(undefined),
+  addRepeatJob: jest.fn().mockResolvedValue(undefined),
+  remove: jest.fn().mockResolvedValue(undefined),
+}));
+
+jest.mock('../../lib/Redis', () => ({
+  set: jest.fn().mockResolvedValue(undefined),
+  get: jest.fn().mockResolvedValue(undefined),
+  invalidate: jest.fn().mockResolvedValue(undefined),
+  invalidatePrefix: jest.fn().mockResolvedValue(undefined),
+}));
+
 describe('Project', () => {
   beforeEach(async () => {
     await truncate();
@@ -43,6 +56,39 @@ describe('Project', () => {
     expect(response.body).toStrictEqual({
       message: 'A user can create only one project',
       status: 'error',
+    });
+  });
+
+  it('should be able to get project list', async () => {
+    const { token } = await createProject();
+
+    const response = await request(app.server)
+      .get('/v1/pvt/projects')
+      .set('Authorization', `bearer ${token}`);
+
+    expect(response.body.length).toBe(1);
+  });
+
+  it('should be able to get a owner project', async () => {
+    const { token, project } = await createProject();
+
+    const response = await request(app.server)
+      .get(`/v1/pvt/projects/${project.id}`)
+      .set('Authorization', `bearer ${token}`);
+
+    expect(response.body.id).toBe(project.id);
+  });
+
+  it('should be able to return error if invalid projectId', async () => {
+    const { token, project } = await createProject();
+
+    const response = await request(app.server)
+      .get(`/v1/pvt/projects/test${project.id}`)
+      .set('Authorization', `bearer ${token}`);
+
+    expect(response.status).toBe(400);
+    expect(response.body).toStrictEqual({
+      message: 'Invalid PorjectId',
     });
   });
 });

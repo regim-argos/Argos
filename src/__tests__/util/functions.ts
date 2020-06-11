@@ -27,7 +27,18 @@ async function createProject() {
     .post('/v1/pvt/projects')
     .set('Authorization', `bearer ${token}`)
     .send(project);
-  return { project: response.body, token, user };
+  return { project: response.body as Project, token, user };
+}
+
+async function createProjectWith2Members() {
+  const { token, project, user } = await createProject();
+
+  await request(app.server)
+    .post(`/v1/pvt/${project.id}/projectMember`)
+    .set('Authorization', `bearer ${token}`)
+    .send({ email: 'admin@argos2.com' });
+
+  return { token, project, user };
 }
 
 async function createNotifications(projectId: number, token: string) {
@@ -56,5 +67,6 @@ export {
   createProject,
   createNotifications,
   createWatchers,
+  createProjectWith2Members,
   createTokenAndUser2,
 };
