@@ -89,7 +89,7 @@ describe('Watcher', () => {
       .send(watcher);
     expect(response.status).toBe(400);
     expect(response.body).toStrictEqual({
-      message: "User isn't  a project member",
+      message: "User isn't a project member",
       status: 'error',
     });
   });
@@ -160,7 +160,7 @@ describe('Watcher', () => {
 
     expect(response.status).toBe(400);
     expect(response.body).toStrictEqual({
-      message: "User isn't  a project member",
+      message: "User isn't a project member",
       status: 'error',
     });
   });
@@ -188,7 +188,7 @@ describe('Watcher', () => {
 
     expect(response.status).toBe(400);
     expect(response.body).toStrictEqual({
-      message: "User isn't  a project member",
+      message: "User isn't a project member",
       status: 'error',
     });
   });
@@ -230,7 +230,7 @@ describe('Watcher', () => {
 
     expect(response.status).toBe(400);
     expect(response.body).toStrictEqual({
-      message: "User isn't  a project member",
+      message: "User isn't a project member",
       status: 'error',
     });
   });

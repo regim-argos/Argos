@@ -78,7 +78,7 @@ describe('ProjectMember', () => {
 
     expect(response.status).toBe(400);
     expect(response.body).toStrictEqual({
-      message: "user isn't project owner",
+      message: "User isn't a project owner",
       status: 'error',
     });
   });
@@ -94,7 +94,7 @@ describe('ProjectMember', () => {
 
     expect(response.status).toBe(400);
     expect(response.body).toStrictEqual({
-      message: "User isn't project member",
+      message: "User isn't a project member",
       status: 'error',
     });
   });
@@ -120,7 +120,7 @@ describe('ProjectMember', () => {
 
     expect(response.status).toBe(400);
     expect(response.body).toStrictEqual({
-      message: "User isn't project member",
+      message: "User isn't a project member",
       status: 'error',
     });
   });

@@ -44,7 +44,7 @@ class ProjectService {
 
   async verifyIsProjectMember(userId: number, projectId: number) {
     const project = await this.model.verifyIsProjectMember(userId, projectId);
-    if (!project) throw new BadRequestError("User isn't  a project member");
+    if (!project) throw new BadRequestError("User isn't a project member");
     return project;
   }
 
@@ -59,9 +59,9 @@ class ProjectService {
 
   async verifyIsOwnerMember(userId: number, projectId: number) {
     const project = await this.model.verifyIsProjectMember(userId, projectId);
-    if (!project) throw new BadRequestError("User isn't project member");
+    if (!project) throw new BadRequestError("User isn't a project member");
     if (project.members[0].role !== 'OWNER')
-      throw new BadRequestError("user isn't project owner");
+      throw new BadRequestError("User isn't a project owner");
     return project;
   }
 
@@ -109,7 +109,7 @@ class ProjectService {
       projectId
     );
 
-    if (!projectOwner) throw new BadRequestError("User isn't project member");
+    if (!projectOwner) throw new BadRequestError("User isn't a project member");
 
     if (projectOwner.members[0].userId === userId)
       throw new BadRequestError("You can't remove yourself");
