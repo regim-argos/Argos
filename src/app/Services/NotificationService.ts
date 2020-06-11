@@ -1,5 +1,6 @@
 import NotFoundError from '@app/Error/NotFoundError';
 import { verifyIsProjectMember } from '@app/utils/ProjectDecorators';
+import ValidateDecorator from '@app/utils/ValidateDecorator';
 import IService from './IService';
 import NotificationValidator from '../Validators/NotificationValidator';
 import BadRequestError from '../Error/BadRequestError';
@@ -31,22 +32,25 @@ class NotificationService extends IService<Notification> {
     return item;
   }
 
+  @ValidateDecorator(0, 'createValidator')
   @verifyIsProjectMember(1, 2)
-  async create(data: object, userId: number, projectId: number) {
-    const validated = await this.validator.createValidator<Notification>(data);
-
-    const notification = await this.model.create(validated, projectId);
+  async create(data: Notification, userId: number, projectId: number) {
+    const notification = await this.model.create(data, projectId);
 
     return notification;
   }
 
+  @ValidateDecorator(0, 'updateValidator')
   @verifyIsProjectMember(2, 3)
-  async update(data: object, id: number, userId: number, projectId: number) {
-    const validated = await this.validator.updateValidator<Notification>(data);
-
+  async update(
+    data: Notification,
+    id: number,
+    userId: number,
+    projectId: number
+  ) {
     await this.verifyAndGetWithAuth(id, projectId);
 
-    const newValue = await this.model.updateById(validated, id, projectId);
+    const newValue = await this.model.updateById(data, id, projectId);
 
     return newValue;
   }

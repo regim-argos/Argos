@@ -1,5 +1,6 @@
 import Queue from '@lib/Queue';
 import NewMemberEmail from '@app/jobs/NewMemberEmail';
+import ValidateDecorator from '@app/utils/ValidateDecorator';
 import BadRequestError from '../Error/BadRequestError';
 import { MemberRole } from '../data/models/ProjectMember';
 import ProjectData from '../data/ProjectData';
@@ -9,6 +10,8 @@ import UserServices from './UserServices';
 
 class ProjectService {
   protected model = ProjectData;
+
+  protected validator = ProjectValidator;
 
   async getUserProjects(userId: number) {
     const project = await this.model.getUserProjects(userId);
@@ -20,12 +23,8 @@ class ProjectService {
     return this.model.getById(projectId);
   }
 
-  // TODO user email
+  @ValidateDecorator(0, 'createValidator')
   async create(data: Partial<Project>, userId: number) {
-    const ValidatedProject = await ProjectValidator.createValidator<Project>(
-      data
-    );
-
     const HasOwnProject = await UserServices.verifyHasOwnProject(userId);
 
     const { email } = await UserServices.verifyAndGetUserById(userId);
@@ -35,7 +34,7 @@ class ProjectService {
     }
 
     const project = await this.model.createOne({
-      ...ValidatedProject,
+      ...data,
       members: [{ userId, role: MemberRole.OWNER, email }],
     });
 
@@ -65,18 +64,16 @@ class ProjectService {
     return project;
   }
 
+  @ValidateDecorator(0, 'addMember')
   async addMember(data: { email: string }, userId: number, projectId: number) {
-    const ValidatedProject = await ProjectValidator.addMember<{
-      email: string;
-    }>(data);
-    const { email } = ValidatedProject;
+    const { email } = data;
 
     const projectOwner = await this.verifyIsOwnerMember(userId, projectId);
 
-    await this.verifyIsProjectMemberByEmail(ValidatedProject.email, projectId);
+    await this.verifyIsProjectMemberByEmail(email, projectId);
 
     const userToAdd = await UserServices.verifyAndGetUserByEmailWithoutError(
-      ValidatedProject.email
+      email
     );
 
     const project = await this.model.addMember(userToAdd?.id, email, projectId);
@@ -92,15 +89,13 @@ class ProjectService {
     return project;
   }
 
+  @ValidateDecorator(0, 'addMember')
   async removeMember(
     data: { email: string },
     userId: number,
     projectId: number
   ) {
-    const ValidatedProject = await ProjectValidator.addMember<{
-      email: string;
-    }>(data);
-    const { email } = ValidatedProject;
+    const { email } = data;
 
     await this.verifyIsOwnerMember(userId, projectId);
 

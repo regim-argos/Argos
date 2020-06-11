@@ -1,6 +1,7 @@
 /* eslint-disable import/no-cycle */
 import NotFoundError from '@app/Error/NotFoundError';
 import { verifyIsProjectMember } from '@app/utils/ProjectDecorators';
+import ValidateDecorator from '@app/utils/ValidateDecorator';
 import WatcherValidator from '../Validators/WatcherValidator';
 import Queue from '../../lib/Queue';
 import BadRequestError from '../Error/BadRequestError';
@@ -35,19 +36,19 @@ class WatcherService extends IService<Watcher> {
     return item;
   }
 
-  async create(data: object, userId: number, projectId: number) {
-    const validated = await this.validator.createValidator<Watcher>(data);
+  @ValidateDecorator(0, 'createValidator')
+  async create(data: Watcher, userId: number, projectId: number) {
     const project = await ProjectService.verifyIsProjectMember(
       userId,
       projectId
     );
 
-    if (validated.notifications?.length)
+    if (data.notifications?.length)
       await NotificationService.getAllByIds(
-        validated.notifications.map((item) => item.id),
+        data.notifications.map((item) => item.id),
         projectId
       );
-    if (validated.delay < project.defaultDelay)
+    if (data.delay < project.defaultDelay)
       throw new BadRequestError(
         `Watcher time can't be less than ${project.defaultDelay} seconds`
       );
@@ -57,7 +58,7 @@ class WatcherService extends IService<Watcher> {
         `Can't add another watcher, max number is ${project.watcherNumber}. Want more? upgrade your plan`
       );
 
-    const watcher = await this.model.create(validated, projectId);
+    const watcher = await this.model.create(data, projectId);
 
     if (watcher.active)
       await Queue.addRepeatJob('Watcher', watcher, {
@@ -67,24 +68,24 @@ class WatcherService extends IService<Watcher> {
     return watcher;
   }
 
-  async update(data: object, id: number, userId: number, projectId: number) {
-    const validated = await this.validator.updateValidator<Watcher>(data);
+  @ValidateDecorator(0, 'updateValidator')
+  async update(data: Watcher, id: number, userId: number, projectId: number) {
     const project = await ProjectService.verifyIsProjectMember(
       userId,
       projectId
     );
-    if (validated.notifications?.length)
+    if (data.notifications?.length)
       await NotificationService.getAllByIds(
-        validated.notifications.map((item) => item.id),
+        data.notifications.map((item) => item.id),
         projectId
       );
-    if (validated.delay < project.defaultDelay)
+    if (data.delay < project.defaultDelay)
       throw new BadRequestError(
         `Watcher time can't be less than ${project.defaultDelay} seconds`
       );
     const old = await this.verifyAndGetWithAuth(id, projectId);
 
-    const newValue = await this.model.updateById(validated, id, projectId);
+    const newValue = await this.model.updateById(data, id, projectId);
 
     await Queue.remove('Watcher', old.delay * 1000, old.id);
     if (newValue.active)

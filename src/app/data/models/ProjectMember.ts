@@ -36,6 +36,7 @@ class ProjectMember extends Model {
     return this;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   static associate(models: any) {
     this.belongsTo(models.User, {
       foreignKey: { field: 'user_id', name: 'userId' },
