@@ -11,6 +11,7 @@ class ProjectCache extends Cache {
     return this.Redis.get(`${this.getKey()}:${key}`);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async setCache(key: string | number, data: any) {
     await this.Redis.set(`${this.getKey()}:${key}`, data);
   }
