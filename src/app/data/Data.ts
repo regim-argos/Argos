@@ -1,3 +1,4 @@
+import { CacheDecorator } from '@app/utils/CacheDecorator';
 import Cache from './cache/Cache';
 
 interface IModel<T> {
@@ -12,28 +13,14 @@ class Data<T> {
 
   protected cache?: Cache;
 
+  @CacheDecorator(1)
   async getAllByProjectId(projectId: number) {
-    let value = await this.cache?.getCache(projectId, 'all');
-
-    if (value) return value;
-
-    value = await this.model.getAllByProjectId(projectId);
-
-    await this.cache?.setCache(projectId, 'all', value);
-
-    return value;
+    return this.model.getAllByProjectId(projectId);
   }
 
+  @CacheDecorator(0, 1)
   async getById(id: number, projectId: number) {
-    let value = await this.cache?.getCache(projectId, id);
-
-    if (value) return value;
-
-    value = await this.model.getById(id, projectId);
-
-    await this.cache?.setCache(projectId, id, value);
-
-    return value;
+    return this.model.getById(id, projectId);
   }
 
   async create(data: T, projectId: number) {

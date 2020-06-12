@@ -1,3 +1,4 @@
+import { CacheProjectDecorator } from '@app/utils/CacheDecorator';
 import ProjectCache from './cache/ProjectCache';
 import Project from './models/Project';
 
@@ -10,32 +11,20 @@ class ProjectData {
     return this.model.createOne(data);
   }
 
+  @CacheProjectDecorator(
+    (userId: number, projectId: number) => `${projectId}:isMember:${userId}`
+  )
   async verifyIsProjectMember(userId: number, projectId: number) {
-    const value = await this.cache.getCache(`${projectId}:isMember:${userId}`);
-
-    if (value) return value;
-
-    const project = await this.model.verifyIsProjectMember(userId, projectId);
-
-    await this.cache.setCache(`${projectId}:isMember:${userId}`, project);
-
-    return project;
+    return this.model.verifyIsProjectMember(userId, projectId);
   }
 
   async verifyIsProjectMemberByEmail(email: string, projectId: number) {
     return this.model.verifyIsProjectMemberByEmail(email, projectId);
   }
 
+  @CacheProjectDecorator((userId: number) => `all:userId:${userId}`)
   async getUserProjects(userId: number) {
-    const value = await this.cache.getCache(`all:userId:${userId}`);
-
-    if (value) return value;
-
-    const project = await this.model.getUserProjects(userId);
-
-    await this.cache.setCache(`all:userId:${userId}`, project);
-
-    return project;
+    return this.model.getUserProjects(userId);
   }
 
   async addMember(
@@ -66,16 +55,9 @@ class ProjectData {
     await this.cache.invalidateProjects(ids);
   }
 
+  @CacheProjectDecorator((projectId: number) => projectId)
   async getById(projectId: number) {
-    const value = await this.cache.getCache(projectId);
-
-    if (value) return value;
-
-    const project = await this.model.getById(projectId);
-
-    await this.cache.setCache(projectId, project);
-
-    return project;
+    return this.model.getById(projectId);
   }
 }
 

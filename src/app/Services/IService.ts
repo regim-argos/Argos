@@ -25,9 +25,5 @@ export default abstract class IService<T> {
     projectId: number
   ): Promise<T>;
 
-  abstract delete(
-    id: number,
-    userId: number,
-    projectId: number
-  ): Promise<number>;
+  abstract delete(id: number, userId: number, projectId: number): Promise<T>;
 }
