@@ -2,6 +2,7 @@
 import NotFoundError from '@app/Error/NotFoundError';
 import { verifyIsProjectMember } from '@app/utils/ProjectDecorators';
 import ValidateDecorator from '@app/utils/ValidateDecorator';
+import WatcherToNotification from '@app/utils/IWatcherToNotification';
 import WatcherValidator from '../Validators/WatcherValidator';
 import Queue from '../../lib/Queue';
 import BadRequestError from '../Error/BadRequestError';
@@ -116,7 +117,7 @@ class WatcherService extends IService<Watcher> {
     return this.model.getByIdWithEvent(id, user_id, month, year);
   }
 
-  async changeStatus(watcher: Watcher) {
+  async changeStatusNotifications(watcher: WatcherToNotification) {
     await Promise.all(
       watcher.notifications.map(async (notification) => {
         if (notification.active === true) {
@@ -127,11 +128,6 @@ class WatcherService extends IService<Watcher> {
         }
       })
     );
-    // await app.socketIo.sendNotification(
-    //   watcher.user_id,
-    //   'ChangeStatus',
-    //   watcher
-    // );
   }
 }
 

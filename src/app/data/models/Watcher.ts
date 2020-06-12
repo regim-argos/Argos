@@ -157,10 +157,12 @@ class Watcher extends Model {
     id: number,
     projectId: number
   ) {
-    const [, [Doc]] = await this.update(data, {
+    await this.update(data, {
       where: { projectId, id },
       returning: true,
     });
+
+    const Doc = await this.getById(id, projectId);
 
     return Doc;
   }

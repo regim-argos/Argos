@@ -40,13 +40,6 @@ class ProjectCache extends Cache {
     }));
     return this.invalidation([...projectKeyOne, ...projectKeyMany]);
   }
-
-  // invalidateUpdateKeys(userId: number, id: number) {
-  //   return [
-  //     ...super.invalidateUpdateKeys(userId, id),
-  //     { key: `${WatcherCache.getKey(userId)}`, type: 'MANY' },
-  //   ];
-  // }
 }
 
 export default new ProjectCache();

@@ -13,12 +13,12 @@ class Data<T> {
 
   protected cache?: Cache;
 
-  @CacheDecorator(1)
+  @CacheDecorator(0)
   async getAllByProjectId(projectId: number) {
     return this.model.getAllByProjectId(projectId);
   }
 
-  @CacheDecorator(0, 1)
+  @CacheDecorator(1, 0)
   async getById(id: number, projectId: number) {
     return this.model.getById(id, projectId);
   }
