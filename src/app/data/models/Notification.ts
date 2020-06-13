@@ -3,9 +3,7 @@ import Sequelize, { Model } from 'sequelize';
 class Notification extends Model {
   public id!: number;
 
-  public user_id!: number;
-
-  public userId!: number;
+  public projectId!: number;
 
   public platform!: string;
 
@@ -24,6 +22,7 @@ class Notification extends Model {
         name: Sequelize.STRING,
         active: Sequelize.BOOLEAN,
         platformData: Sequelize.JSON,
+        projectId: Sequelize.INTEGER,
       },
       {
         sequelize,
@@ -35,53 +34,56 @@ class Notification extends Model {
 
   // @ts-ignore
   static associate(models) {
-    this.belongsTo(models.User, { foreignKey: 'user_id', as: 'user' });
+    this.belongsTo(models.Project, {
+      foreignKey: { field: 'project_id', name: 'projectId' },
+      as: 'project',
+    });
   }
 
-  static async getAllByUserId(user_id: number) {
+  static async getAllByProjectId(projectId: number) {
     const Doc = await this.findAll({
-      where: { user_id },
+      where: { projectId },
       order: [['createdAt', 'DESC']],
     });
 
     return Doc;
   }
 
-  static async getById(id: number, user_id: number) {
+  static async getById(id: number, projectId: number) {
     const Doc = await this.findOne({
-      where: { id, user_id },
+      where: { id, projectId },
     });
 
     return Doc;
   }
 
-  static async createOne(data: Notification, user_id: number) {
+  static async createOne(data: Notification, projectId: number) {
     const Doc = await this.create({
       ...data,
-      user_id,
+      projectId,
     });
 
     return Doc;
   }
 
-  static async updateById(data: Notification, id: number, user_id: number) {
+  static async updateById(data: Notification, id: number, projectId: number) {
     const [, [Doc]] = await this.update(data, {
-      where: { user_id, id },
+      where: { projectId, id },
       returning: true,
     });
 
     return Doc;
   }
 
-  static async deleteById(id: number, user_id: number) {
+  static async deleteById(id: number, projectId: number) {
     return this.destroy({
-      where: { user_id, id },
+      where: { projectId, id },
     });
   }
 
-  static async getAllByIds(ids: number[], user_id: number) {
+  static async getAllByIds(ids: number[], projectId: number) {
     return this.findAll({
-      where: { id: ids, user_id },
+      where: { id: ids, projectId },
       order: [['createdAt', 'DESC']],
     });
   }

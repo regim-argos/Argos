@@ -9,11 +9,11 @@ class WatcherData extends Data<Watcher> {
 
   async getByIdWithEvent(
     id: number,
-    user_id: number,
+    projectId: number,
     month?: number,
     year?: number
   ) {
-    return this.model.getByIdWithEvent(id, user_id, month, year);
+    return this.model.getByIdWithEvent(id, projectId, month, year);
   }
 }
 

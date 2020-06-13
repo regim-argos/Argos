@@ -1,6 +1,7 @@
 import Sequelize, { Model } from 'sequelize';
 import bcrypt from 'bcryptjs';
 import File from './File';
+import ProjectMember from './ProjectMember';
 
 class User extends Model {
   id!: number;
@@ -66,6 +67,10 @@ class User extends Model {
       foreignKey: { field: 'image_id', name: 'imageId' },
       as: 'image',
     });
+    this.hasMany(models.ProjectMember, {
+      as: 'projects',
+      foreignKey: { field: 'user_id', name: 'userId' },
+    });
   }
 
   checkPassword(password: string) {
@@ -85,6 +90,21 @@ class User extends Model {
     const DocUser = await this.findOne({
       where: { email },
       include: this.include,
+    });
+
+    return DocUser;
+  }
+
+  static async verifyHasOwnProject(id: number) {
+    const DocUser = await this.findOne({
+      where: { id },
+      include: [
+        {
+          model: ProjectMember,
+          as: 'projects',
+          where: { role: 'OWNER' },
+        },
+      ],
     });
 
     return DocUser;

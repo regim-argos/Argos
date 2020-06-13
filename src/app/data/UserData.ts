@@ -18,6 +18,10 @@ class UserData {
   async updateOne(data: Partial<User>, id: number) {
     return this.model.updateOne(data, id);
   }
+
+  async verifyHasOwnProject(id: number) {
+    return this.model.verifyHasOwnProject(id);
+  }
 }
 
 export default new UserData();

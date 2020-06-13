@@ -9,18 +9,28 @@ import mailConfig from '../config/mail';
 
 interface ArgosMail extends MailNodemailer.Options {
   template: string;
-  context: {
-    userName: string;
-    link: string;
-  };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  context: any;
 }
+
+const config =
+  process.env.NODE_ENV === 'production'
+    ? {
+        SES: new SES({
+          apiVersion: '2010-12-01',
+          region: 'us-east-1',
+        }),
+      }
+    : {
+        host: 'smtp.mailtrap.io',
+        port: 2525,
+        auth: {
+          user: process.env.MAIL_TRAP_USER,
+          pass: process.env.MAIL_TRAP_PASSWORD,
+        },
+      };
 class Mail {
-  protected transporter = nodemailer.createTransport({
-    SES: new SES({
-      apiVersion: '2010-12-01',
-      region: 'us-east-1',
-    }),
-  });
+  protected transporter = nodemailer.createTransport(config);
 
   constructor() {
     this.configureTemplates();

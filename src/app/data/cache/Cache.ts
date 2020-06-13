@@ -7,36 +7,36 @@ class Cache {
     return Redis;
   }
 
-  getKey(userId: number) {
-    return `${userId}:${this.keyPrefix}`;
+  getKey(projectId: number) {
+    return `${projectId}:${this.keyPrefix}`;
   }
 
-  invalidatesCreateKeys(userId: number) {
-    return [{ key: `${this.getKey(userId)}:all`, type: 'ONE' }];
+  invalidatesCreateKeys(projectId: number) {
+    return [{ key: `${this.getKey(projectId)}:all`, type: 'ONE' }];
   }
 
-  invalidateUpdateKeys(userId: number, id: number) {
+  invalidateUpdateKeys(projectId: number, id: number) {
     return [
-      { key: `${this.getKey(userId)}:all`, type: 'ONE' },
-      { key: `${this.getKey(userId)}:${id}`, type: 'ONE' },
+      { key: `${this.getKey(projectId)}:all`, type: 'ONE' },
+      { key: `${this.getKey(projectId)}:${id}`, type: 'ONE' },
     ];
   }
 
-  async getCache(userId: number, key: string | number) {
-    return Redis.get(`${this.getKey(userId)}:${key}`);
+  async getCache(projectId: number, key: string | number) {
+    return Redis.get(`${this.getKey(projectId)}:${key}`);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async setCache(userId: number, key: string | number, data: any) {
-    await Redis.set(`${this.getKey(userId)}:${key}`, data);
+  async setCache(projectId: number, key: string | number, data: any) {
+    await Redis.set(`${this.getKey(projectId)}:${key}`, data);
   }
 
-  async invalidateCreate(userId: number) {
-    return this.invalidation(this.invalidatesCreateKeys(userId));
+  async invalidateCreate(projectId: number) {
+    return this.invalidation(this.invalidatesCreateKeys(projectId));
   }
 
-  async invalidateUpdate(userId: number, id: number) {
-    return this.invalidation(this.invalidateUpdateKeys(userId, id));
+  async invalidateUpdate(projectId: number, id: number) {
+    return this.invalidation(this.invalidateUpdateKeys(projectId, id));
   }
 
   async invalidation(

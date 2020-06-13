@@ -3,7 +3,6 @@ import BadRequestError from '../Error/BadRequestError';
 import Hash from '../data/models/Hash';
 // import HashValidator from '../Validators/MealValidator';
 // import { notFound } from '../Error/TypeErrors';
-// import ProductService from './ProductService';
 
 class HashServices {
   protected model = Hash;
@@ -29,9 +28,8 @@ class HashServices {
     return hash;
   }
 
-  async delete(id: number) {
-    const deleteds = await this.model.deleteHashById(id);
-    if (deleteds) throw new BadRequestError('Invalid token');
+  async delete(userId: number, type: string) {
+    await this.model.deleteHashByUserIdAndType(userId, type);
     return true;
   }
 }

@@ -7,8 +7,8 @@ class NotificationData extends Data<Notification> {
 
   protected cache = NotificationCache;
 
-  async getAllByIds(ids: number[], userId: number) {
-    return this.model.getAllByIds(ids, userId);
+  async getAllByIds(ids: number[], projectId: number) {
+    return this.model.getAllByIds(ids, projectId);
   }
 }
 

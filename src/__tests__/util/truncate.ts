@@ -21,6 +21,14 @@ export default function truncate(confirmEmail = true) {
         created_at: new Date(),
         updated_at: new Date(),
       },
+      {
+        name: 'Argos Admin',
+        email: 'admin@argos2.com',
+        password_hash: bcrypt.hashSync('123456', 8),
+        active: confirmEmail,
+        created_at: new Date(),
+        updated_at: new Date(),
+      },
     ]),
   ]);
 }

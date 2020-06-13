@@ -17,7 +17,7 @@ class ForgetPassword {
 
     await Mail.sendMail({
       to: `${name} <${email}`,
-      subject: 'Email de recuperação de senha',
+      subject: 'Password recovery',
       template: 'changePassword',
       context: {
         userName: name,

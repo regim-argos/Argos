@@ -1,16 +1,26 @@
 import { Sequelize, Options } from 'sequelize';
 
-import User from '../app/data/models/User';
-
 // @ts-ignore
+import User from '@app/data/models/User';
 import databaseConfig from '../config/database';
 import Hash from '../app/data/models/Hash';
 import File from '../app/data/models/File';
 import Watcher from '../app/data/models/Watcher';
 import Notification from '../app/data/models/Notification';
 import Event from '../app/data/models/Event';
+import Project from '../app/data/models/Project';
+import ProjectMember from '../app/data/models/ProjectMember';
 
-const models = [User, Hash, File, Watcher, Notification, Event];
+const models = [
+  User,
+  Hash,
+  File,
+  Watcher,
+  Notification,
+  Event,
+  Project,
+  ProjectMember,
+];
 
 class Database {
   public connection: Sequelize = new Sequelize(

@@ -25,7 +25,7 @@ class UserValidator extends Validator {
   });
 
   protected updatePasswordSchema = Yup.object().shape({
-    password: Yup.string().min(6),
+    password: Yup.string().required().min(6),
     confirmPassword: Yup.string().when(
       'password',
       (password: string, field: Yup.StringSchema<string>) =>
@@ -33,8 +33,17 @@ class UserValidator extends Validator {
     ),
   });
 
+  protected sessionSchema = Yup.object().shape({
+    email: Yup.string().email().required(),
+    password: Yup.string().required(),
+  });
+
   async updatePassword<T>(payload: object) {
     return this.validate<T>(this.updatePasswordSchema, payload);
+  }
+
+  async sessionValidator<T>(payload: object) {
+    return this.validate<T>(this.sessionSchema, payload);
   }
 }
 

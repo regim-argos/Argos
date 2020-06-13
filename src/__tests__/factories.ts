@@ -3,6 +3,7 @@ import factory from 'factory-girl';
 import Watcher from '../app/data/models/Watcher';
 import Notification from '../app/data/models/Notification';
 import User from '../app/data/models/User';
+import Project from '../app/data/models/Project';
 
 factory.define('User', User, {
   name: faker.name.findName(),
@@ -22,6 +23,10 @@ factory.define('Watcher', Watcher, {
   name: faker.name.findName(),
   url: faker.internet.url(),
   delay: faker.random.number({ min: 60, max: 180 }),
+});
+
+factory.define('Project', Project, {
+  name: faker.name.findName(),
 });
 
 export default factory;

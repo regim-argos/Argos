@@ -1,56 +1,43 @@
+import { CacheDecorator } from '@app/utils/CacheDecorator';
 import Cache from './cache/Cache';
 
 interface IModel<T> {
-  getAllByUserId(userId: number): Promise<T[]>;
-  getById(id: number, userId: number): Promise<T | null>;
-  createOne(data: T, userId: number): Promise<T>;
-  updateById(data: Partial<T>, id: number, userId: number): Promise<T>;
-  deleteById(id: number, userId: number): Promise<number>;
+  getAllByProjectId(projectId: number): Promise<T[]>;
+  getById(id: number, projectId: number): Promise<T | null>;
+  createOne(data: T, projectId: number): Promise<T>;
+  updateById(data: Partial<T>, id: number, projectId: number): Promise<T>;
+  deleteById(id: number, projectId: number): Promise<number>;
 }
 class Data<T> {
   protected model!: IModel<T>;
 
   protected cache?: Cache;
 
-  async getAllByUserId(userId: number) {
-    let value = await this.cache?.getCache(userId, 'all');
+  @CacheDecorator(0)
+  async getAllByProjectId(projectId: number) {
+    return this.model.getAllByProjectId(projectId);
+  }
 
-    if (value) return value;
+  @CacheDecorator(1, 0)
+  async getById(id: number, projectId: number) {
+    return this.model.getById(id, projectId);
+  }
 
-    value = await this.model.getAllByUserId(userId);
-
-    await this.cache?.setCache(userId, 'all', value);
-
+  async create(data: T, projectId: number) {
+    const value = await this.model.createOne(data, projectId);
+    await this.cache?.invalidateCreate(projectId);
     return value;
   }
 
-  async getById(id: number, userId: number) {
-    let value = await this.cache?.getCache(userId, id);
-
-    if (value) return value;
-
-    value = await this.model.getById(id, userId);
-
-    await this.cache?.setCache(userId, id, value);
-
+  async updateById(data: Partial<T>, id: number, projectId: number) {
+    const value = await this.model.updateById(data, id, projectId);
+    await this.cache?.invalidateUpdate(projectId, id);
     return value;
   }
 
-  async create(data: T, userId: number) {
-    const value = await this.model.createOne(data, userId);
-    await this.cache?.invalidateCreate(userId);
-    return value;
-  }
-
-  async updateById(data: Partial<T>, id: number, userId: number) {
-    const value = await this.model.updateById(data, id, userId);
-    await this.cache?.invalidateUpdate(userId, id);
-    return value;
-  }
-
-  async deleteById(id: number, userId: number) {
-    const value = await this.model.deleteById(id, userId);
-    await this.cache?.invalidateUpdate(userId, id);
+  async deleteById(id: number, projectId: number) {
+    const value = await this.model.deleteById(id, projectId);
+    await this.cache?.invalidateUpdate(projectId, id);
     return value;
   }
 }

@@ -1,32 +1,29 @@
 import { Request, Response, NextFunction } from 'express';
+import IntergerParamsValidator from '@app/utils/IntergerParamsValidator';
 import WatcherService from '../Services/WatcherService';
 
 class WatcherController {
   protected service = WatcherService;
 
-  async show(req: Request, res: Response, next: NextFunction) {
+  @IntergerParamsValidator('projectId')
+  @IntergerParamsValidator('id')
+  async show(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    req: Request<any, any, any, { month: number; year: number }>,
+    res: Response,
+    next: NextFunction
+  ) {
     const { userId, params, query } = req;
 
     const id = parseInt(params.id, 10);
+    const projectId = parseInt(params.projectId, 10);
 
-    let month;
-    let year;
-
-    if (!id) return res.status(400).json({ message: 'Invalid ID' });
-    if (query.month) {
-      month = parseInt(query.month as string, 10);
-
-      if (month && month <= 12 && month >= 1)
-        return res.status(400).json({ message: 'Invalid Month' });
-    }
-
-    if (query.year) {
-      year = parseInt(query.year as string, 10);
-
-      if (!year) return res.status(400).json({ message: 'Invalid Year' });
-    }
-
-    const item = await this.service.getByIdWithEvent(id, userId, month, year);
+    const item = await this.service.getByIdWithEvent(
+      id,
+      userId,
+      projectId,
+      query
+    );
 
     return res.status(200).json(item);
   }

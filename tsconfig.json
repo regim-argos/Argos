@@ -10,9 +10,15 @@
     "strictPropertyInitialization": false,
     "baseUrl": "./src",
     "paths": {
-      "@tests/*": ["__tests__/*"]
+      "@tests/*": ["__tests__/*"],
+      "@app/*": ["app/*"],
+      "@config/*": ["config/*"],
+      "@database/*": ["database/*"],
+      "@lib/*": ["lib/*"],
+      "@src/*": ["/*"]
     },
     "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "experimentalDecorators": true
   }
 }

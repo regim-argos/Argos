@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Bull from 'bull';
 import { setQueues } from 'bull-board';
+import NewMemberEmail from '@app/jobs/NewMemberEmail';
 import ConfirmEmailJob from '../app/jobs/ConfirmEmail';
 import redisConfig from '../config/redis';
 import ForgetPassword from '../app/jobs/ForgetPassword';
@@ -15,6 +16,7 @@ const jobs = [
   Watcher,
   DiscordNotification,
   SlackNotification,
+  NewMemberEmail,
 ];
 
 interface ArgosQueues {

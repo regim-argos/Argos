@@ -1,20 +1,15 @@
 /* eslint-disable no-console */
 import axios from 'axios';
+import WatcherToNotification from '@app/utils/IWatcherToNotification';
 import Logger from '../../lib/Logger';
 import WatcherData from '../data/WatcherData';
 import WatcherModel from '../data/models/Watcher';
 import Event from '../data/models/Event';
+import WatcherService from '../Services/WatcherService';
 
 interface WatcherMsgData {
   data: WatcherModel;
 }
-
-const ArgosApi = axios.create({
-  baseURL: `${process.env.API_URL}/v1/pvt/`,
-  headers: {
-    Authorization: `Bearer ${process.env.ADMIN_TOKEN}`,
-  },
-});
 
 const timingAxios = axios.create();
 timingAxios.interceptors.request.use((config) => {
@@ -40,8 +35,10 @@ class Watcher {
   }
 
   async handle({ data }: WatcherMsgData) {
-    const { id, user_id } = data;
-    const watcher = await WatcherData.getById(id, user_id);
+    const { id, projectId } = data;
+    const watcher = await WatcherData.getById(id, projectId);
+
+    if (!watcher) return;
 
     let status;
     let responseTime;
@@ -56,16 +53,14 @@ class Watcher {
     }
     if (watcher.status !== status) {
       const lastChange = new Date();
-      const newWatcher = await WatcherData.updateById(
+      const newWatcher = (await WatcherData.updateById(
         { lastChange: lastChange.toISOString(), status },
         id,
-        user_id
-      );
+        projectId
+      )) as WatcherToNotification;
       await Event.createOne(newWatcher.id, status, lastChange);
-      await ArgosApi.put(`change_status/${id}`, {
-        ...newWatcher,
-        oldLastChange: watcher.lastChange,
-      });
+      newWatcher.oldLastChange = watcher.lastChange;
+      await WatcherService.changeStatusNotifications(newWatcher);
     }
     Logger.info('Watcher', {
       id: watcher.id,
