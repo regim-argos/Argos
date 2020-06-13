@@ -17,7 +17,7 @@ jest.mock('../../lib/Redis', () => ({
   invalidatePrefix: jest.fn().mockResolvedValue(undefined),
 }));
 
-describe('User', () => {
+describe('Session', () => {
   beforeEach(async () => {
     await truncate();
   });
