@@ -107,14 +107,16 @@ class WatcherService extends IService<Watcher> {
     return watcher;
   }
 
-  // TODO remove user
+  @verifyIsProjectMember(1, 2)
+  @ValidateDecorator(3, 'watcherDetailValidator')
   async getByIdWithEvent(
     id: number,
-    user_id: number,
-    month?: number,
-    year?: number
+    userId: number,
+    projectId: number,
+    { month, year }: { month: number; year: number }
   ) {
-    return this.model.getByIdWithEvent(id, user_id, month, year);
+    console.log(month, year);
+    return this.model.getByIdWithEvent(id, projectId, month, year);
   }
 
   async changeStatusNotifications(watcher: WatcherToNotification) {

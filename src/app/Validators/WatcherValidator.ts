@@ -29,6 +29,16 @@ class WatcherValidator extends Validator {
       })
     ),
   });
+
+  protected watcherDetailSchema = Yup.object().shape({
+    month: Yup.number().min(1).max(12),
+    year: Yup.number(),
+  });
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async watcherDetailValidator<T>(payload: any) {
+    return this.validate<T>(this.watcherDetailSchema, payload);
+  }
 }
 
 export default new WatcherValidator();
