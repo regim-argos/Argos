@@ -25,8 +25,8 @@ const config =
         host: 'smtp.mailtrap.io',
         port: 2525,
         auth: {
-          user: '471831df728c67',
-          pass: '4b4f2000b96aaf',
+          user: process.env.MAIL_TRAP_USER,
+          pass: process.env.MAIL_TRAP_PASSWORD,
         },
       };
 class Mail {

@@ -17,7 +17,7 @@ class ConfirmEmail {
 
     await Mail.sendMail({
       to: `${name} <${email}`,
-      subject: 'Email de confirmação',
+      subject: 'Email Confirmation',
       template: 'confirmEmail',
       context: {
         userName: name,
