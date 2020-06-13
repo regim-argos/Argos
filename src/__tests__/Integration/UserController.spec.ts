@@ -1,6 +1,9 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import request from 'supertest';
-import { createProjectWith2Members } from '@tests/util/functions';
+import {
+  createProjectWith2Members,
+  createTokenAndUser,
+} from '@tests/util/functions';
 import truncate from '../util/truncate';
 import factory from '../factories';
 import app from '../../app';
@@ -69,5 +72,63 @@ describe('User', () => {
 
     expect(response.status).toBe(201);
     expect(response.body.members[1].userId).toBe(userResponse.body.id);
+  });
+
+  it('should be able to update a user', async () => {
+    const { token } = await createTokenAndUser();
+
+    const response = await request(app.server)
+      .put('/v1/pvt/users')
+      .send({
+        name: 'test',
+        oldPassword: 123456,
+        password: 1234567,
+        confirmPassword: 1234567,
+      })
+      .set('Authorization', `bearer ${token}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty('id');
+  });
+
+  it('should not be able to update a user with invalid imageId', async () => {
+    const { token } = await createTokenAndUser();
+
+    const response = await request(app.server)
+      .put('/v1/pvt/users')
+      .send({
+        name: 'test',
+        imageId: 2,
+        oldPassword: 123456,
+        password: 1234567,
+        confirmPassword: 1234567,
+      })
+      .set('Authorization', `bearer ${token}`);
+
+    expect(response.status).toBe(400);
+    expect(response.body).toStrictEqual({
+      message: 'Image not found',
+      status: 'error',
+    });
+  });
+
+  it('should not be able to update a user with invalid olaPassword', async () => {
+    const { token } = await createTokenAndUser();
+
+    const response = await request(app.server)
+      .put('/v1/pvt/users')
+      .send({
+        name: 'test',
+        oldPassword: 1234568,
+        password: 1234567,
+        confirmPassword: 1234567,
+      })
+      .set('Authorization', `bearer ${token}`);
+
+    expect(response.status).toBe(400);
+    expect(response.body).toStrictEqual({
+      message: 'Password does not match',
+      status: 'error',
+    });
   });
 });

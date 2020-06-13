@@ -1,3 +1,4 @@
+import jwt from 'jsonwebtoken';
 import ValidateDecorator from '@app/utils/ValidateDecorator';
 import UserData from '../data/UserData';
 import HashService from './HashService';
@@ -10,6 +11,7 @@ import BadRequestError from '../Error/BadRequestError';
 import FileService from './FileService';
 import User from '../data/models/User';
 import ProjectService from './ProjectService';
+import authConfig from '../../config/auth';
 
 class UserServices {
   protected model = UserData;
@@ -19,7 +21,7 @@ class UserServices {
   async confirmEmail(hash: string) {
     const hashDb = await HashService.verifyAndGetHash(hash, 'CONFIRM_EMAIL');
     await this.model.updateOne({ active: true }, hashDb.user_id);
-    await HashService.delete(hashDb.id);
+    await HashService.delete(hashDb.user_id, 'CONFIRM_EMAIL');
   }
 
   @ValidateDecorator(1, 'updatePassword')
@@ -28,7 +30,7 @@ class UserServices {
     const hashDb = await HashService.verifyAndGetHash(hash, 'CHANGE_PASSWORD');
 
     await this.model.updateOne({ password }, hashDb.user_id);
-    await HashService.delete(hashDb.id);
+    await HashService.delete(hashDb.user_id, 'CHANGE_PASSWORD');
   }
 
   async verifyAndGetUserByEmail(email: string) {
@@ -64,6 +66,7 @@ class UserServices {
   }
 
   async createConfirmEmailHash(email: string, user?: User) {
+    if (!email) throw new BadRequestError('Email is required');
     const { id, name, active } =
       user || (await this.verifyAndGetUserByEmail(email));
     if (active) throw new BadRequestError('Email already confirmed');
@@ -109,6 +112,28 @@ class UserServices {
       return true;
     }
     return false;
+  }
+
+  @ValidateDecorator(0, 'sessionValidator')
+  async session(data: { email: string; password: string }) {
+    const { email, password } = data;
+
+    const user = await this.verifyAndGetUserByEmailWithoutError(email);
+
+    if (!user) throw new BadRequestError('Invalid credentials');
+
+    if (!(await user.checkPassword(password))) {
+      throw new BadRequestError('Invalid credentials');
+    }
+
+    const { id, name, image } = user;
+
+    return {
+      user: { id, name, email, image },
+      token: jwt.sign({ id }, authConfig.secret as string, {
+        expiresIn: authConfig.expiresIn,
+      }),
+    };
   }
 }
 

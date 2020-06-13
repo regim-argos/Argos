@@ -45,9 +45,9 @@ class Hash extends Model {
     return DocHash;
   }
 
-  static async deleteHashById(id: number) {
+  static async deleteHashByUserIdAndType(userId: number, type: string) {
     return this.destroy({
-      where: { id },
+      where: { user_id: userId, type },
     });
   }
 }
