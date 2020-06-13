@@ -41,6 +41,21 @@ describe('Notification', () => {
     expect(response.body).toMatchObject(notification);
   });
 
+  it('should not be able to create a notification with invalid projectId', async () => {
+    const { project, token } = await createProject();
+
+    const notification = (await factory.attrs('Notification')) as Notification;
+    const response = await request(app.server)
+      .post(`/v1/pvt/a${project.id}a/notifications`)
+      .set('Authorization', `bearer ${token}`)
+      .send(notification);
+    expect(response.status).toBe(400);
+    expect(response.body).toStrictEqual({
+      message: 'Invalid projectId',
+      status: 'error',
+    });
+  });
+
   it('should not be able to create a notification if user is not a member in project', async () => {
     const { project } = await createProject();
     const user2 = await createTokenAndUser2();
