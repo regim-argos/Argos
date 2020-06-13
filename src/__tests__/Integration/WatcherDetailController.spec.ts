@@ -54,19 +54,4 @@ describe('Watcher Detail', () => {
 
     expect(response.body.events.length).toBe(2);
   });
-
-  // it('should not be able to return watchers if user is not a member in project', async () => {
-  //   const { project } = await createProject();
-  //   const user2 = await createTokenAndUser2();
-
-  //   const response = await request(app.server)
-  //     .get(`/v1/pvt/${project.id}/watchers/`)
-  //     .set('Authorization', `bearer ${user2.token}`);
-
-  //   expect(response.status).toBe(400);
-  //   expect(response.body).toStrictEqual({
-  //     message: "User isn't a project member",
-  //     status: 'error',
-  //   });
-  // });
 });

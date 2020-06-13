@@ -6,6 +6,7 @@ import {
   createProject,
   createTokenAndUser2,
   createWatchers,
+  createNotifications,
 } from '@tests/util/functions';
 import app from '../../app';
 import Watcher from '../../app/data/models/Watcher';
@@ -34,13 +35,35 @@ describe('Watcher', () => {
 
   it('should be able to create a watcher', async () => {
     const { project, token } = await createProject();
+    const { notification } = await createNotifications(project.id, token);
 
-    const watcher = (await factory.attrs('Watcher')) as Watcher;
+    const watcher = ((await factory.attrs('Watcher', {
+      notifications: [{ id: notification.id }],
+    })) as unknown) as Watcher;
+
     const response = await request(app.server)
       .post(`/v1/pvt/${project.id}/watchers`)
       .set('Authorization', `bearer ${token}`)
       .send(watcher);
     expect(response.body).toMatchObject(watcher);
+  });
+
+  it('should not be able to create a with invalid notifications ids', async () => {
+    const { project, token } = await createProject();
+    const { notification } = await createNotifications(project.id, token);
+
+    const watcher = ((await factory.attrs('Watcher', {
+      notifications: [{ id: notification.id + 1 }],
+    })) as unknown) as Watcher;
+
+    const response = await request(app.server)
+      .post(`/v1/pvt/${project.id}/watchers`)
+      .set('Authorization', `bearer ${token}`)
+      .send(watcher);
+    expect(response.body).toStrictEqual({
+      message: 'Notification(s) not found',
+      status: 'error',
+    });
   });
 
   it('should not be able to create a watcher with less permite delay', async () => {
@@ -97,13 +120,36 @@ describe('Watcher', () => {
   it('should be able to update a watcher', async () => {
     const { project, token } = await createProject();
     const { watcher } = await createWatchers(project.id, token);
+    const { notification } = await createNotifications(project.id, token);
 
-    const watcherUpdate = (await factory.attrs('Watcher')) as Watcher;
+    const watcherUpdate = ((await factory.attrs('Watcher', {
+      notifications: [{ id: notification.id }],
+    })) as unknown) as Watcher;
+
     const response = await request(app.server)
       .put(`/v1/pvt/${project.id}/watchers/${watcher.id}`)
       .set('Authorization', `bearer ${token}`)
       .send(watcherUpdate);
     expect(response.body).toMatchObject(watcherUpdate);
+  });
+
+  it('should not be able to update a watcher with invalid notification id', async () => {
+    const { project, token } = await createProject();
+    const { watcher } = await createWatchers(project.id, token);
+    const { notification } = await createNotifications(project.id, token);
+
+    const watcherUpdate = ((await factory.attrs('Watcher', {
+      notifications: [{ id: notification.id + 1 }],
+    })) as unknown) as Watcher;
+
+    const response = await request(app.server)
+      .put(`/v1/pvt/${project.id}/watchers/${watcher.id}`)
+      .set('Authorization', `bearer ${token}`)
+      .send(watcherUpdate);
+    expect(response.body).toStrictEqual({
+      message: 'Notification(s) not found',
+      status: 'error',
+    });
   });
 
   it('should be able to update a exist watcher', async () => {

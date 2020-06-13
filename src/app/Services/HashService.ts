@@ -29,8 +29,7 @@ class HashServices {
   }
 
   async delete(userId: number, type: string) {
-    const deleteds = await this.model.deleteHashByUserIdAndType(userId, type);
-    if (!deleteds) throw new BadRequestError('Invalid token');
+    await this.model.deleteHashByUserIdAndType(userId, type);
     return true;
   }
 }

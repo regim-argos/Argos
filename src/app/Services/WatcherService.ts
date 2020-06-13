@@ -115,7 +115,6 @@ class WatcherService extends IService<Watcher> {
     projectId: number,
     { month, year }: { month: number; year: number }
   ) {
-    console.log(month, year);
     return this.model.getByIdWithEvent(id, projectId, month, year);
   }
 
