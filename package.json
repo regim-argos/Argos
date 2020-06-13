@@ -9,7 +9,7 @@
     "posttest": "cross-env NODE_ENV=test sequelize db:migrate:undo:all",
     "dev": "ts-node-dev -r tsconfig-paths/register --transpileOnly --inspect --ignore node_modules src/server.ts",
     "queue": "ts-node-dev -r tsconfig-paths/register --transpileOnly --inspect=9230 --ignore node_modules src/queue.ts",
-    "build": "tsc",
+    "build": "tsc && tscpaths -p tsconfig.json -s ./src -o ./dist",
     "migrations": "sequelize db:migrate",
     "start": "NODE_ENV=production node ./dist/server.js",
     "queue:production": "NODE_ENV=production node ./dist/queue.js",
@@ -45,6 +45,7 @@
     "sequelize": "^5.21.7",
     "sequelize-cli": "^5.5.1",
     "socket.io": "^2.3.0",
+    "tsconfig-paths": "^3.9.0",
     "winston": "^3.2.1",
     "youch": "^2.0.10",
     "yup": "^0.28.5"
@@ -81,12 +82,11 @@
     "faker": "^4.1.0",
     "jest": "^26.0.1",
     "prettier": "^2.0.5",
-    "sqlite3": "^4.2.0",
     "sucrase": "^3.13.0",
     "supertest": "^4.0.2",
     "ts-jest": "^26.0.0",
     "ts-node-dev": "^1.0.0-pre.44",
-    "tsconfig-paths": "^3.9.0",
+    "tscpaths": "^0.0.9",
     "typescript": "^3.8.3"
   }
 }
