@@ -35,15 +35,18 @@ class Watcher {
   }
 
   async handle({ data }: WatcherMsgData) {
-    const { id, projectId } = data;
-    const watcher = await WatcherData.getById(id, projectId);
-
-    if (!watcher) return;
+    const {
+      id,
+      projectId,
+      url,
+      status: oldStatus,
+      lastChange: oldLastChange,
+    } = data;
 
     let status;
     let responseTime;
     try {
-      const responseAPI = await timingAxios.get(watcher.url);
+      const responseAPI = await timingAxios.get(url);
       status = true;
       // @ts-ignore
       responseTime = responseAPI.config.requestTime;
@@ -51,7 +54,7 @@ class Watcher {
       status = false;
       responseTime = error.requestTime;
     }
-    if (watcher.status !== status) {
+    if (oldStatus !== status) {
       const lastChange = new Date();
       const newWatcher = (await WatcherData.updateById(
         { lastChange: lastChange.toISOString(), status },
@@ -59,11 +62,11 @@ class Watcher {
         projectId
       )) as WatcherToNotification;
       await Event.createOne(newWatcher.id, status, lastChange);
-      newWatcher.oldLastChange = watcher.lastChange;
+      newWatcher.oldLastChange = oldLastChange;
       await WatcherService.changeStatusNotifications(newWatcher);
     }
     Logger.info('Watcher', {
-      id: watcher.id,
+      id,
       requestDate: new Date(),
       status,
       responseTime,
