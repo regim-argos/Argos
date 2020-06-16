@@ -10,6 +10,7 @@
     "dev": "ts-node-dev -r tsconfig-paths/register --transpileOnly --inspect --ignore node_modules src/server.ts",
     "queue": "ts-node-dev -r tsconfig-paths/register --transpileOnly --inspect=9230 --ignore node_modules src/queue.ts",
     "build": "tsc && tscpaths -p tsconfig.json -s ./src -o ./dist",
+    "postbuild": "cp -r src/app/views dist/app/",
     "migrations": "sequelize db:migrate",
     "start": "NODE_ENV=production node ./dist/server.js",
     "queue:production": "NODE_ENV=production node ./dist/queue.js",
