@@ -19,7 +19,7 @@ class ProjectService {
   }
 
   async verifyAndGet(userId: number, projectId: number) {
-    await this.verifyIsOwnerMember(userId, projectId);
+    await this.verifyIsProjectMember(userId, projectId);
     return this.model.getById(projectId);
   }
 
