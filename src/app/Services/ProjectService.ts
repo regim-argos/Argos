@@ -33,10 +33,13 @@ class ProjectService {
       throw new BadRequestError('A user can create only one project');
     }
 
-    const project = await this.model.createOne({
-      ...data,
-      members: [{ userId, role: MemberRole.OWNER, email }],
-    });
+    const project = await this.model.createOne(
+      {
+        ...data,
+        members: [{ userId, role: MemberRole.OWNER, email }],
+      },
+      userId
+    );
 
     return project;
   }

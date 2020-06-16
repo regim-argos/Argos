@@ -7,8 +7,10 @@ class ProjectData {
 
   protected cache = ProjectCache;
 
-  async createOne(data: Partial<Project>) {
-    return this.model.createOne(data);
+  async createOne(data: Partial<Project>, userId: number) {
+    const value = this.model.createOne(data);
+    await this.cache.invalidateUser(userId);
+    return value;
   }
 
   @CacheProjectDecorator(
