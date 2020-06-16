@@ -23,7 +23,7 @@ class Logger {
   }
 
   error(type: string, data: object) {
-    this.logger.log('error', type, { data, level: 'error' });
+    this.logger.error('error', { data, level: 'error' });
   }
 }
 
