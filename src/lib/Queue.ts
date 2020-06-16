@@ -89,6 +89,7 @@ class Queue {
 
   handleFailure(_: any, err: Error) {
     // eslint-disable-next-line no-console
+    console.log(err);
     Logger.error('WatcherError', err);
   }
 

@@ -24,7 +24,7 @@ const storage =
     ? multerS3({
         s3,
         acl: 'public-read',
-        bucket: 'argos',
+        bucket: 'argos-image',
         key(req: any, file: any, cb: any) {
           fileName(file, cb);
         },
