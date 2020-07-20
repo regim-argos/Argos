@@ -1,0 +1,12 @@
+config:
+  target: 'https://api.diogomachado.site/v1/pvt/'
+  phases:
+    - duration: 60
+      arrivalRate: 20
+  defaults:
+    headers:
+      Authorization: 'bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNTkyMjY5NjgwLCJleHAiOjE1OTI4NzQ0ODB9.WKeDLQtCebZvQMvQevJHJQfIVXpU3vlQ_U-zrB_qjr0'
+scenarios:
+  - flow:
+    - get:
+        url: "/projects"
