@@ -1,5 +1,5 @@
 export default {
   default: {
-    from: 'Equipe Argos <noreply@diogomachado.site>',
+    from: 'Equipe Argos <noreply@projectargos.tech>',
   },
 };
