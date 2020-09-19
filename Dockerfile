@@ -7,6 +7,8 @@ COPY ./ /argos
 
 WORKDIR /argos
 
+RUN apk --no-cache add curl
+
 RUN npm set progress=false && \
   npm i --silent --production
 
