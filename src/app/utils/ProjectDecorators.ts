@@ -22,10 +22,12 @@ export function verifyIsProjectMember(userIdPos: number, projectIdPos: number) {
     const originalMethod = descriptor.value;
 
     descriptor.value = async function Before(...args: any[]) {
-      await ProjectService.verifyIsProjectMember(
-        args[userIdPos],
-        args[projectIdPos]
-      );
+      if(args[userIdPos] !== "ADMIN"){
+        await ProjectService.verifyIsProjectMember(
+          args[userIdPos],
+          args[projectIdPos]
+        );
+      }
       return originalMethod.apply(this, args);
     };
 

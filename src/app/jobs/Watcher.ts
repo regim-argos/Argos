@@ -60,7 +60,7 @@ class Watcher {
       )) as WatcherToNotification;
       await Event.createOne(newWatcher.id, status, lastChange);
       newWatcher.oldLastChange = watcher.lastChange;
-      await WatcherService.changeStatusNotifications(newWatcher);
+      // await WatcherService.changeStatusNotifications(newWatcher);
     }
     Logger.info('Watcher', {
       id: watcher.id,

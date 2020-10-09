@@ -13,7 +13,6 @@ import Logger from './Logger';
 const jobs = [
   ConfirmEmailJob,
   ForgetPassword,
-  Watcher,
   DiscordNotification,
   SlackNotification,
   NewMemberEmail,
