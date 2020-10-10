@@ -11,6 +11,8 @@ import WatcherData from '../data/WatcherData';
 import Watcher from '../data/models/Watcher';
 import ProjectService from './ProjectService';
 import IService from './IService';
+import Event from '@app/data/models/Event';
+import Rabbit from '@lib/Rabbit';
 
 class WatcherService extends IService<Watcher> {
   public name = 'Watcher';
@@ -62,9 +64,7 @@ class WatcherService extends IService<Watcher> {
     const watcher = await this.model.create(data, projectId);
 
     if (watcher.active)
-      await Queue.addRepeatJob('Watcher', watcher, {
-        every: watcher.delay * 1000,
-      });
+      await Rabbit.sendMessage('watcher', watcher, true);
 
     return watcher;
   }
@@ -88,11 +88,8 @@ class WatcherService extends IService<Watcher> {
 
     const newValue = await this.model.updateById(data, id, projectId);
 
-    await Queue.remove('Watcher', old.delay * 1000, old.id);
-    if (newValue.active)
-      await Queue.addRepeatJob('Watcher', newValue, {
-        every: newValue.delay * 1000,
-      });
+    if (newValue.active === true && old.active !== newValue.active || newValue.delay !== old.delay)
+      await Rabbit.sendMessage('watcher', newValue, true);
 
     return newValue;
   }
@@ -118,7 +115,11 @@ class WatcherService extends IService<Watcher> {
     return this.model.getByIdWithEvent(id, projectId, month, year);
   }
 
-  async changeStatusNotifications(watcher: WatcherToNotification) {
+  async changeStatusNotifications(id: number, projectId: number, status: boolean, lastChange: string) {
+    const watcher = await this.verifyAndGetWithAuth(id, projectId) as WatcherToNotification;
+    await this.model.updateById({status, lastChange}, id, projectId);
+    await Event.createOne(id, status, new Date(lastChange));
+    watcher.oldLastChange = watcher.lastChange;
     await Promise.all(
       watcher.notifications.map(async (notification) => {
         if (notification.active === true) {

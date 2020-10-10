@@ -1,3 +1,5 @@
+import ChangeStatusController from '@app/controllers/ChangeStatusController';
+import adminAuth from '@app/middlewares/adminAuth';
 import { Router } from 'express';
 
 import WatcherController from '../../../controllers/WatcherController';
@@ -18,6 +20,9 @@ routes.put('/:projectId/watchers/:id', (req, res, next) =>
 );
 routes.delete('/:projectId/watchers/:id', (req, res, next) =>
   WatcherController.delete(req, res, next)
+);
+routes.put('/:projectId/changeStatus/:id', adminAuth,(req, res, next) =>
+  ChangeStatusController.update(req, res, next)
 );
 
 export default routes;

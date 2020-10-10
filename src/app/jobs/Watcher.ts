@@ -5,7 +5,6 @@ import Logger from '../../lib/Logger';
 import WatcherData from '../data/WatcherData';
 import WatcherModel from '../data/models/Watcher';
 import Event from '../data/models/Event';
-import WatcherService from '../Services/WatcherService';
 
 interface WatcherMsgData {
   data: WatcherModel;
@@ -60,7 +59,7 @@ class Watcher {
       )) as WatcherToNotification;
       await Event.createOne(newWatcher.id, status, lastChange);
       newWatcher.oldLastChange = watcher.lastChange;
-      await WatcherService.changeStatusNotifications(newWatcher);
+      // await WatcherService.changeStatusNotifications(newWatcher);
     }
     Logger.info('Watcher', {
       id: watcher.id,
