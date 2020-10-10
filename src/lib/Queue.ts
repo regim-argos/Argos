@@ -5,7 +5,6 @@ import NewMemberEmail from '@app/jobs/NewMemberEmail';
 import ConfirmEmailJob from '../app/jobs/ConfirmEmail';
 import redisConfig from '../config/redis';
 import ForgetPassword from '../app/jobs/ForgetPassword';
-import Watcher from '../app/jobs/Watcher';
 import DiscordNotification from '../app/jobs/DiscordNotification';
 import SlackNotification from '../app/jobs/SlackNotification';
 import Logger from './Logger';

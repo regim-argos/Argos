@@ -5,7 +5,6 @@ import Logger from '../../lib/Logger';
 import WatcherData from '../data/WatcherData';
 import WatcherModel from '../data/models/Watcher';
 import Event from '../data/models/Event';
-import WatcherService from '../Services/WatcherService';
 
 interface WatcherMsgData {
   data: WatcherModel;

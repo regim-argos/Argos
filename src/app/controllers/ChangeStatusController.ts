@@ -13,7 +13,7 @@ class ChangeStatusController {
     res: Response,
     next: NextFunction
   ) {
-    const { params, query } = req;
+    const { params } = req;
 
     const id = parseInt(params.id, 10);
     const projectId = parseInt(params.projectId, 10);
