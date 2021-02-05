@@ -3,19 +3,18 @@ import axios from 'axios';
 import getDataFormat from '../utils/getDataFormat';
 import WatcherToNotification from '../utils/IWatcherToNotification';
 import Notification from '../data/models/Notification';
+import { IWorkerController } from './IWorkerController';
 
 interface SlackData {
-  data: {
-    watcher: WatcherToNotification;
-    notification: Notification;
-  };
+  watcher: WatcherToNotification;
+  notification: Notification;
 }
-class SlackNotification {
+class SlackNotification implements IWorkerController {
   get key() {
     return 'SLACK_NOTIFICATION';
   }
 
-  async handle({ data }: SlackData) {
+  async handle(data: SlackData) {
     const { watcher, notification } = data;
     const status = watcher.status ? 'UP' : 'DOWN';
     const circle = watcher.status ? ':heavy_check_mark:' : ':red_circle:';
