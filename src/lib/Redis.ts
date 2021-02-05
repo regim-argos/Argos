@@ -35,7 +35,7 @@ class Cache {
     }
   }
 
-  set(key: string, value: any, expires = process.env.DEFAULT_CACHE_EXPIRATION) {
+  set(key: string, value: any, expires = 60 * 60 * 6) {
     if (!this.redis || this.redis.status !== 'ready') {
       return null;
     }
