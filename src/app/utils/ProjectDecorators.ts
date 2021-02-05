@@ -22,7 +22,7 @@ export function verifyIsProjectMember(userIdPos: number, projectIdPos: number) {
     const originalMethod = descriptor.value;
 
     descriptor.value = async function Before(...args: any[]) {
-      if(args[userIdPos] !== "ADMIN"){
+      if (args[userIdPos] !== 'ADMIN') {
         await ProjectService.verifyIsProjectMember(
           args[userIdPos],
           args[projectIdPos]
