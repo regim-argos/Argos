@@ -8,14 +8,16 @@ class Logger {
   });
 
   constructor() {
-    this.logger.add(
-      new DatadogWinston({
-        apiKey: process.env.API_DATADOG as string,
-        hostname: 'argos',
-        service: 'argos',
-        ddsource: 'node.js',
-      })
-    );
+    if (process.env.NODE_ENV === 'production') {
+      this.logger.add(
+        new DatadogWinston({
+          apiKey: process.env.API_DATADOG as string,
+          hostname: 'argos',
+          service: 'argos',
+          ddsource: 'node.js',
+        })
+      );
+    }
   }
 
   info(type: string, data: object) {
