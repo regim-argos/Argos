@@ -3,6 +3,9 @@ import NotFoundError from '@app/Error/NotFoundError';
 import { verifyIsProjectMember } from '@app/utils/ProjectDecorators';
 import ValidateDecorator from '@app/utils/ValidateDecorator';
 import WatcherToNotification from '@app/utils/IWatcherToNotification';
+import Event from '@app/data/models/Event';
+import Rabbit from '@lib/Rabbit';
+import { v4 } from 'uuid';
 import WatcherValidator from '../Validators/WatcherValidator';
 import Queue from '../../lib/Queue';
 import BadRequestError from '../Error/BadRequestError';
@@ -11,8 +14,6 @@ import WatcherData from '../data/WatcherData';
 import Watcher from '../data/models/Watcher';
 import ProjectService from './ProjectService';
 import IService from './IService';
-import Event from '@app/data/models/Event';
-import Rabbit from '@lib/Rabbit';
 
 class WatcherService extends IService<Watcher> {
   public name = 'Watcher';
@@ -61,10 +62,12 @@ class WatcherService extends IService<Watcher> {
         `Can't add another watcher, max number is ${project.watcherNumber}. Want more? upgrade your plan`
       );
 
-    const watcher = await this.model.create(data, projectId);
+    const watcher = await this.model.create(
+      { ...data, currentWatcherId: v4() } as Watcher,
+      projectId
+    );
 
-    if (watcher.active)
-      await Rabbit.sendMessage('watcher', watcher, true);
+    if (watcher.active) await Rabbit.sendMessage('watcher', watcher, true);
 
     return watcher;
   }
@@ -84,12 +87,15 @@ class WatcherService extends IService<Watcher> {
       throw new BadRequestError(
         `Watcher time can't be less than ${project.defaultDelay} seconds`
       );
-    const old = await this.verifyAndGetWithAuth(id, projectId);
+    await this.verifyAndGetWithAuth(id, projectId);
 
-    const newValue = await this.model.updateById(data, id, projectId);
+    const newValue = await this.model.updateById(
+      { ...data, currentWatcherId: v4() },
+      id,
+      projectId
+    );
 
-    if (newValue.active === true && old.active !== newValue.active || newValue.delay !== old.delay)
-      await Rabbit.sendMessage('watcher', newValue, true);
+    await Rabbit.sendMessage('watcher', newValue, true);
 
     return newValue;
   }
@@ -115,18 +121,30 @@ class WatcherService extends IService<Watcher> {
     return this.model.getByIdWithEvent(id, projectId, month, year);
   }
 
-  async changeStatusNotifications(id: number, projectId: number, status: boolean, lastChange: string) {
-    const watcher = await this.verifyAndGetWithAuth(id, projectId) as WatcherToNotification;
-    await this.model.updateById({status, lastChange}, id, projectId);
+  async changeStatusNotifications(
+    id: number,
+    projectId: number,
+    status: boolean,
+    lastChange: string
+  ) {
+    const watcher = (await this.verifyAndGetWithAuth(
+      id,
+      projectId
+    )) as WatcherToNotification;
+    await this.model.updateById({ status, lastChange }, id, projectId);
     await Event.createOne(id, status, new Date(lastChange));
     watcher.oldLastChange = watcher.lastChange;
     await Promise.all(
       watcher.notifications.map(async (notification) => {
         if (notification.active === true) {
-          await Queue.add(`${notification.platform}_NOTIFICATION`, {
-            watcher,
-            notification,
-          });
+          await Rabbit.sendMessage(
+            `${notification.platform}_NOTIFICATION`.toLowerCase(),
+            {
+              watcher,
+              notification,
+            },
+            true
+          );
         }
       })
     );
