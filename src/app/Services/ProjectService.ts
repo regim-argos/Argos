@@ -1,6 +1,5 @@
-import Queue from '@lib/Queue';
-import NewMemberEmail from '@app/jobs/NewMemberEmail';
 import ValidateDecorator from '@app/utils/ValidateDecorator';
+import Rabbit from '@lib/Rabbit';
 import BadRequestError from '../Error/BadRequestError';
 import { MemberRole } from '../data/models/ProjectMember';
 import ProjectData from '../data/ProjectData';
@@ -82,11 +81,15 @@ class ProjectService {
     const project = await this.model.addMember(userToAdd?.id, email, projectId);
 
     if (!userToAdd?.id) {
-      await Queue.add(NewMemberEmail.key, {
-        name: projectOwner.members[0].user?.name,
-        email,
-        projectName: project.name,
-      });
+      await Rabbit.sendMessage(
+        'new-member',
+        {
+          name: projectOwner.members[0].user?.name,
+          email,
+          projectName: project.name,
+        },
+        true
+      );
     }
 
     return project;
