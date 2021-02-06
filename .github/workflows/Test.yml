@@ -9,10 +9,6 @@ jobs:
   tests:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [12.x]
-
     services:
       postgres:
         image: postgres:10.8
@@ -32,8 +28,8 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     #- run:
-    - run: npm install
-    - run: npm test
+    - run: yarn
+    - run: yarn test
       env:
         CI: true
         NODE_ENV: test
