@@ -22,6 +22,8 @@ jest.mock('../../lib/Redis', () => ({
   invalidatePrefix: jest.fn().mockResolvedValue(undefined),
 }));
 
+jest.mock('../../lib/Rabbit');
+
 describe('Notification', () => {
   beforeEach(async () => {
     await truncate();
