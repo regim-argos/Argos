@@ -19,6 +19,8 @@ jest.mock('../../lib/Redis', () => ({
   invalidatePrefix: jest.fn().mockResolvedValue(undefined),
 }));
 
+jest.mock('../../lib/Rabbit');
+
 describe('File', () => {
   beforeEach(async () => {
     await truncate();

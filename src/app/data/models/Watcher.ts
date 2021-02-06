@@ -20,6 +20,8 @@ class Watcher extends Model {
 
   public lastChange!: string;
 
+  public currentWatcherId!: string;
+
   public notifications!: Notification[];
 
   static initModel(sequelize: Sequelize.Sequelize) {
@@ -33,6 +35,7 @@ class Watcher extends Model {
         lastChange: Sequelize.DATE,
         notifications: Sequelize.JSONB,
         projectId: Sequelize.INTEGER,
+        currentWatcherId: Sequelize.STRING,
       },
       {
         sequelize,
@@ -60,6 +63,7 @@ class Watcher extends Model {
       watcher.status,
       watcher.delay,
       watcher.active,
+      watcher.current_watcher_id AS "currentWatcherId",
       watcher.project_id AS "projectId",
       watcher.last_change AS "lastChange",
           JSONB_AGG(

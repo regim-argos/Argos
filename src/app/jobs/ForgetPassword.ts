@@ -1,18 +1,17 @@
 import Mail from '../../lib/Mail';
+import { IWorkerController } from './IWorkerController';
 
 interface ForgetPasswordEmailData {
-  data: {
-    name: string;
-    email: string;
-    hash: string;
-  };
+  name: string;
+  email: string;
+  hash: string;
 }
-class ForgetPassword {
+class ForgetPassword implements IWorkerController {
   get key() {
     return 'ForgetPassword';
   }
 
-  async handle({ data }: ForgetPasswordEmailData) {
+  async handle(data: ForgetPasswordEmailData) {
     const { name, email, hash } = data;
 
     await Mail.sendMail({

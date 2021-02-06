@@ -18,6 +18,8 @@ jest.mock('../../lib/Redis', () => ({
   invalidatePrefix: jest.fn().mockResolvedValue(undefined),
 }));
 
+jest.mock('../../lib/Rabbit');
+
 describe('forgetPassword', () => {
   beforeEach(async () => {
     await truncate();

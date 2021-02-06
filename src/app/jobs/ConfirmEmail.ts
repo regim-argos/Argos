@@ -1,18 +1,17 @@
 import Mail from '../../lib/Mail';
+import { IWorkerController } from './IWorkerController';
 
 interface ConfirmEmailData {
-  data: {
-    name: string;
-    email: string;
-    hash: string;
-  };
+  name: string;
+  email: string;
+  hash: string;
 }
-class ConfirmEmail {
+class ConfirmEmail implements IWorkerController {
   get key() {
     return 'ConfirmEmail';
   }
 
-  async handle({ data }: ConfirmEmailData) {
+  async handle(data: ConfirmEmailData) {
     const { name, email, hash } = data;
 
     await Mail.sendMail({

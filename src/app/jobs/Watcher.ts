@@ -1,14 +1,12 @@
 /* eslint-disable no-console */
 import axios from 'axios';
 import WatcherToNotification from '@app/utils/IWatcherToNotification';
+import Rabbit from '@lib/Rabbit';
 import Logger from '../../lib/Logger';
 import WatcherData from '../data/WatcherData';
 import WatcherModel from '../data/models/Watcher';
 import Event from '../data/models/Event';
-
-interface WatcherMsgData {
-  data: WatcherModel;
-}
+import { IWorkerController } from './IWorkerController';
 
 const timingAxios = axios.create();
 timingAxios.interceptors.request.use((config) => {
@@ -28,16 +26,21 @@ timingAxios.interceptors.response.use(
   }
 );
 
-class Watcher {
+class Watcher implements IWorkerController {
   get key() {
     return 'Watcher';
   }
 
-  async handle({ data }: WatcherMsgData) {
+  async handle(data: WatcherModel) {
     const { id, projectId } = data;
     const watcher = await WatcherData.getById(id, projectId);
-
     if (!watcher) return;
+    console.log(
+      watcher.currentWatcherId,
+      data.currentWatcherId,
+      watcher.currentWatcherId !== data.currentWatcherId
+    );
+    if (watcher.currentWatcherId !== data.currentWatcherId) return;
 
     let status;
     let responseTime;
@@ -61,6 +64,7 @@ class Watcher {
       newWatcher.oldLastChange = watcher.lastChange;
       // await WatcherService.changeStatusNotifications(newWatcher);
     }
+    Rabbit.sendMessageWithDelay('watcher', data, watcher.delay * 1000, true);
     Logger.info('Watcher', {
       id: watcher.id,
       requestDate: new Date(),

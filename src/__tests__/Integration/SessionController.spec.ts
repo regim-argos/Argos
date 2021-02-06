@@ -10,6 +10,8 @@ jest.mock('../../lib/Queue', () => ({
   remove: jest.fn().mockResolvedValue(undefined),
 }));
 
+jest.mock('../../lib/Rabbit');
+
 jest.mock('../../lib/Redis', () => ({
   set: jest.fn().mockResolvedValue(undefined),
   get: jest.fn().mockResolvedValue(undefined),

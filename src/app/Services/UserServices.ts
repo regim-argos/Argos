@@ -1,11 +1,9 @@
 import jwt from 'jsonwebtoken';
 import ValidateDecorator from '@app/utils/ValidateDecorator';
+import Rabbit from '@lib/Rabbit';
 import UserData from '../data/UserData';
 import HashService from './HashService';
 import UserValidator from '../Validators/UserValidator';
-import Queue from '../../lib/Queue';
-import ConfirmEmail from '../jobs/ConfirmEmail';
-import ForgetPassword from '../jobs/ForgetPassword';
 import NotFoundError from '../Error/NotFoundError';
 import BadRequestError from '../Error/BadRequestError';
 import FileService from './FileService';
@@ -62,7 +60,7 @@ class UserServices {
     if (!active) throw new BadRequestError('Email need confirmed');
 
     const { hash } = await HashService.create(id, 'CHANGE_PASSWORD');
-    await Queue.add(ForgetPassword.key, { name, email, hash });
+    await Rabbit.sendMessage('forget-password', { name, email, hash }, true);
   }
 
   async createConfirmEmailHash(email: string, user?: User) {
@@ -72,7 +70,7 @@ class UserServices {
     if (active) throw new BadRequestError('Email already confirmed');
     const { hash } = await HashService.create(id);
 
-    await Queue.add(ConfirmEmail.key, { name, email, hash });
+    await Rabbit.sendMessage('confirm-email', { name, email, hash }, true);
   }
 
   @ValidateDecorator(0, 'createValidator')

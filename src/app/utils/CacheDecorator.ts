@@ -27,6 +27,7 @@ export function CacheDecorator(projectPos: number, idPos?: number) {
 
     descriptor.value = async function Before(...args: any[]) {
       const keyId = idPos !== undefined ? args[idPos] : 'all';
+
       const value = await this.cache.getCache(args[projectPos], keyId);
 
       if (value) return value;
