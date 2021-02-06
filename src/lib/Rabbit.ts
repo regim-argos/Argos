@@ -20,7 +20,9 @@ class Queue {
   }
 
   constructor() {
-    this.init();
+    if (process.env.NODE_ENV !== 'test') {
+      this.init();
+    }
   }
 
   async init() {
