@@ -9,7 +9,6 @@ WORKDIR /argos
 
 RUN apk --no-cache add curl
 
-RUN npm set progress=false && \
-  npm i --silent --production
+RUN yarn --silent --production
 
 CMD yarn migrations && NODE_ENV=production node ./dist/server.js
